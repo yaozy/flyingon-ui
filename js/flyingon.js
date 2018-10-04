@@ -13201,8 +13201,10 @@ flyingon.renderer('Tree', function (base) {
                     return;
 
                 case 'node':
-                    tree.trigger('node-click', 'node', node);
-                    tree.current(node, false);
+                    if (tree.trigger('node-click', 'node', node) === false)
+                    {
+                        tree.current(node, false);
+                    }
                     return;
 
                 default:
@@ -13480,8 +13482,9 @@ flyingon.renderer('TreeNode', function (base) {
     this.expand = function (node) {
 
         var view = node.view,
+            storage = node.__storage,
             folder = find_dom(view, 'folder'),
-            icon = find_dom(view, 'icon'),
+            icon = storage && storage.icon ? null : find_dom(view, 'icon'),
             any;
 
         if (node.length > 0)
