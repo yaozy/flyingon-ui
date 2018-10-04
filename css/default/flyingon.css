@@ -710,7 +710,7 @@ span {
 .f-grid-column-head,
 .f-grid-group-cell,
 .f-grid-no {
-  background-color: white;
+  background-color: #f8f8f8;
 }
 .f-grid-group-box .f-information {
   font-size: 14px;
