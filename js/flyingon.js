@@ -3749,6 +3749,8 @@ flyingon.fragment('f-dataset', function () {
             splice.call(this, 0);
         }
 
+        this.rejectChanges();
+
         if (list && list.length > 0)
         {
             var dataset = this.dataset,
