@@ -13201,7 +13201,7 @@ flyingon.renderer('Tree', function (base) {
                     return;
 
                 case 'node':
-                    if (tree.trigger('node-click', 'node', node) === false)
+                    if (tree.trigger('node-click', 'node', node) !== false)
                     {
                         tree.current(node, false);
                     }
