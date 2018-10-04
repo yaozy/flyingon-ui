@@ -4,7 +4,9 @@ const webminify = require('webminify');
 webminify()
     .load('less', [
         'color.less',
+        'default/color.less',
         'base.less',
+        'button.less',
         'listbox.less',
         'calendar.less',
         'slider.less',

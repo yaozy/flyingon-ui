@@ -39,6 +39,12 @@ flyingon.renderer('Button', function (base) {
     };
 
 
+    this.theme = function (control, view, value) {
+
+        view.setAttribute('theme', value);
+    }
+
+
     this.dropdown = function (control, view, value) {
 
         view.lastChild.style.display = value ? '' : 'none';

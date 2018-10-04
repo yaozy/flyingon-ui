@@ -1,0 +1,113 @@
+.f-button {
+    margin: 0;
+    border: 1px solid @default-color-3;
+    outline: none;
+    white-space: nowrap;
+    text-align: center;
+    transition: .1s;
+    color: @default-color-1;
+    background-color: @default-color-4;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.f-button[theme="primary"] {
+    border-color: @primary-color-3;
+    background-color: @primary-color-1;
+    color: @default-color-5;
+}
+
+.f-button[theme="second"] {
+    border-color: @second-color-3;
+    background-color: @second-color-1;
+    color: @default-color-5;
+}
+
+.f-button[theme="success"] {
+    border-color: @success-color-3;
+    background-color: @success-color-1;
+    color: @default-color-5;
+}
+
+.f-button[theme="warning"] {
+    border-color: @warning-color-3;
+    background-color: @warning-color-1;
+    color: @default-color-5;
+}
+
+.f-button[theme="danger"] {
+    border-color: @danger-color-3;
+    background-color: @danger-color-1;
+    color: @default-color-5;
+}
+
+.f-button[disabled] {
+    border-color: @disabled-color-3;
+    background-color: @disabled-color-5;
+    color: @disabled-color-1;
+    cursor: not-allowed;
+}
+
+.f-button:focus,
+.f-button:hover,
+.f-button:active {
+	color: @primary-color-1;
+	border-color: @primary-color-3;
+	background-color: @primary-color-5
+}
+
+
+.f-button[theme="primary"]:focus,
+.f-button[theme="primary"]:hover,
+.f-button[theme="primary"]:active {
+	color: @default-color-5;
+	border-color: @primary-color-1;
+	background-color: @primary-color-1
+}
+
+
+.f-button[theme="second"]:focus,
+.f-button[theme="second"]:hover,
+.f-button[theme="second"]:active {
+	color: @second-color-1;
+	border-color: @second-color-1;
+	background-color: @second-color-1
+}
+
+
+.f-button[theme="success"]:focus,
+.f-button[theme="success"]:hover,
+.f-button[theme="success"]:active {
+	color: @success-color-1;
+	border-color: @success-color-1;
+	background-color: @success-color-1
+}
+
+
+.f-button[theme="warning"]:focus,
+.f-button[theme="warning"]:hover,
+.f-button[theme="warning"]:active {
+	color: @warning-color-1;
+	border-color: @warning-color-1;
+	background-color: @warning-color-1
+}
+
+
+.f-button[theme="danger"]:focus,
+.f-button[theme="danger"]:hover,
+.f-button[theme="danger"]:active {
+	color: @danger-color-1;
+	border-color: @danger-color-1;
+	background-color: @danger-color-1
+}
+
+
+.f-button[disabled],
+.f-button[theme][disabled] {
+	color: @default-color-3;
+    border-color: @default-color-4;
+    background-color: @default-color-5;
+}

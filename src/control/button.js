@@ -9,6 +9,13 @@ flyingon.Control.extend('Button', function (base) {
     });
 
 
+    //图标
+    this.defineProperty('theme', '', {
+
+        set: this.render
+    });
+
+
     //图标大小
     this['icon-size'] = this.defineProperty('iconSize', 16, {
 
