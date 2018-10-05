@@ -7017,6 +7017,11 @@ flyingon.TouchEvent = flyingon.Event.extend(function () {
     var after = null;
 
 
+
+    // 重定向状态码
+    http.redirectStatus = 299;
+
+
     
     
     function encodeData(data) {
@@ -7150,7 +7155,14 @@ flyingon.TouchEvent = flyingon.Event.extend(function () {
             {
                 if (this.status < 300)
                 {
-                    stream.resolve(this.responseText || this.responseXML);
+                    if (this.status === http.redirectStatus)
+                    {
+                        location.href = this.statusText;
+                    }
+                    else
+                    {
+                        stream.resolve(this.responseText || this.responseXML);
+                    }
                 }
                 else
                 {
