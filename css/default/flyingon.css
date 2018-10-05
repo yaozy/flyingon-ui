@@ -270,42 +270,36 @@ span {
   color: #82848a;
   cursor: not-allowed;
 }
-.f-button:focus,
 .f-button:hover,
 .f-button:active {
   color: #3a8ee6;
   border-color: #8cc5ff;
   background-color: #d9ecff;
 }
-.f-button[theme="primary"]:focus,
 .f-button[theme="primary"]:hover,
 .f-button[theme="primary"]:active {
   color: #ffffff;
   border-color: #3a8ee6;
   background-color: #3a8ee6;
 }
-.f-button[theme="second"]:focus,
 .f-button[theme="second"]:hover,
 .f-button[theme="second"]:active {
   color: #66b1ff;
   border-color: #66b1ff;
   background-color: #66b1ff;
 }
-.f-button[theme="success"]:focus,
 .f-button[theme="success"]:hover,
 .f-button[theme="success"]:active {
   color: #5daf34;
   border-color: #5daf34;
   background-color: #5daf34;
 }
-.f-button[theme="warning"]:focus,
 .f-button[theme="warning"]:hover,
 .f-button[theme="warning"]:active {
   color: #cf9236;
   border-color: #cf9236;
   background-color: #cf9236;
 }
-.f-button[theme="danger"]:focus,
 .f-button[theme="danger"]:hover,
 .f-button[theme="danger"]:active {
   color: #dd6161;

@@ -17895,6 +17895,9 @@ Object.extend('Control', function () {
     style(this, 'font-family');
 
 
+    //
+    style(this, 'white-space');
+
 
     //控件文字词间距(以空格为准)
     style(this, 'word-spacing');
@@ -21430,7 +21433,10 @@ flyingon.Control.extend('Tree', function (base) {
 
     this.scrollTo = function (node) {
 
-        this.view && this.renderer.scrollTo(this, node);
+        if (this.view && node.view)
+        {
+            this.renderer.scrollTo(this, node);
+        }
     };
 
 

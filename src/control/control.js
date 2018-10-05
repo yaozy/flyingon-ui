@@ -571,6 +571,9 @@ Object.extend('Control', function () {
     style(this, 'font-family');
 
 
+    //
+    style(this, 'white-space');
+
 
     //控件文字词间距(以空格为准)
     style(this, 'word-spacing');

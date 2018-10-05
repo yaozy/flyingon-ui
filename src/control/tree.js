@@ -491,7 +491,10 @@ flyingon.Control.extend('Tree', function (base) {
 
     this.scrollTo = function (node) {
 
-        this.view && this.renderer.scrollTo(this, node);
+        if (this.view && node.view)
+        {
+            this.renderer.scrollTo(this, node);
+        }
     };
 
 
