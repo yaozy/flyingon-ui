@@ -76,80 +76,44 @@
 
 
 
-    //url:              url, 包含插件地址及多级hash控制
-    //options.text:     页头文字
-    //options.icon:     页头图标
-    //options.closable: 页签是否可关闭
-    //options.target:   打开页面方式 _blank:在新页面打开 _self:在当前页面打开 other:在指定key为指定值的页面中打开
+    // url:              url, 包含插件地址及多级hash控制
+    // options.key:      页面key
+    // options.text:     页头文字
+    // options.icon:     页头图标
+    // options.closable: 页签是否可关闭
+    // options.plugin:   自定义插件类型
+    // options.data:     自定义参数
     function route(tab, url, options) {
 
-        var page, url, any;
-        
-        if (!tab || !(tab instanceof flyingon.Tab))
-        {
-            throw 'rout tab must be a flyingon.Tab!';
-        }
-
-        if (!url || !(url = url.replace(/^[#!]+/g, '')))
-        {
-            throw 'route options.url can not be empty!';
-        }
+        var key = options.key,
+            page = tab.findByKey(key);
 
         if (!tab.__on_route)
         {
             tab.on('tab-change', route.__tab_change);
             tab.__on_route = true;
         }
-
-        //打开页面方式(未设置页头时永远在当前页面打开)
-        switch (any = tab.header() ? options.target : '_self')
+    
+        if (page && page.url === url)
         {
-            case '_blank': //在新页面打开
-                any = null;
-                break;
-
-            case '_self': //在当前页面打开
-                if ((page = tab.selectedPage()) && page.url === url)
-                {
-                    return;
-                }
-
-                any = null;
-                break;
-
-            default: //在指定的target名称中打开
-                if ((page = tab.findByKey(any)) && page.url === url)
-                {
-                    if (!page.selected())
-                    {
-                        tab.selectedPage(page, 'route');
-                        
-                        page.route.update();
-                        page[0].openPlugin(page.route.next(), false);
-                    }
-
-                    return;
-                }
-                break;
-        }
-        
-        if (page)
-        {
-            page[0].closePlugin();
-            page.splice(0);
+            if (!page.selected())
+            {
+                tab.selectedPage(page, 'route');
+                page[0].openPlugin(page.route.next(), false);
+            }
         }
         else
         {
             tab.push(page = new flyingon.TabPage().layout('fill'));
-        }
 
-        //设置页面key
-        if (any)
-        {
-            page.key(any);
-        }
+            //设置页面key
+            if (key)
+            {
+                page.key(key);
+            }
 
-        new Root().load(route.current = page, url, options);
+            new Root().load(route.current = page, url, options);
+        }
     };
 
 
@@ -180,8 +144,6 @@
 
         this.load = function (page, url, options) {
 
-            var any;
-
             page.route = this;
 
             route.__update(page.url = this.url = url);
@@ -193,6 +155,8 @@
             }
             else
             {
+                var any;
+    
                 this.parse(url);
                 
                 if (any = options.icon)
@@ -214,24 +178,33 @@
 
                 page.loading(200);
  
-                any = this;
+                var next = this.next(),
+                    data = options.data;
 
-                load_plugin(this.plugin, function (Class) {
+                function callback(Class) {
 
-                    var route = any,
-                        plugin;
+                    var plugin;
 
                     page.loading(false);
                     page.push(plugin = new Class());
 
-                    plugin.loadPlugin(route = route.next());
-                    plugin.openPlugin(route, true);
+                    plugin.loadPlugin(next, data);
+                    plugin.openPlugin(next, true);
 
-                    page = any = null;
+                    page = next = data = null;
 
                     //立即更新视图
                     flyingon.update();
-                });
+                }
+
+                if (any = options.plugin)
+                {
+                    callback(any);
+                }
+                else
+                {
+                    load_plugin(this.plugin, callback);
+                }
             }
         };
 

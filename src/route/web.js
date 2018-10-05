@@ -36,7 +36,11 @@
             if (page)
             {
                 page.route.update();
-                e.tag !== 'route' && execute(page.url, true);
+
+                if (e.tag !== 'route')
+                {
+                    execute(page.url, true);
+                }
             }
             else
             {
