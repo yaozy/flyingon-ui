@@ -238,6 +238,7 @@ span {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-size: 12px;
 }
 .f-button[theme="primary"] {
   border-color: #8cc5ff;
@@ -789,9 +790,11 @@ span {
 }
 .f-grid-cell {
   position: absolute;
+  overflow: hidden;
   border-width: 0 1px 1px 0;
   padding: 0 2px;
   outline: none;
+  white-space: nowrap;
 }
 .f-grid-head .f-grid-cell {
   text-align: center;
