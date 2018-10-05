@@ -1834,7 +1834,26 @@ Object.extend('Event', function () {
 flyingon.Stream = Object.extend(function () {
 
 
+
     var Class = this.Class;
+
+
+
+    Class.ctor = function (value) {
+
+        if (arguments.length > 0)
+        {
+            if (typeof value === 'function')
+            {
+                value(this);
+            }
+            else
+            {
+                this.__cache = [value];
+            }
+        }
+    }
+
 
 
     Class.fromPromise = function (promise) {
@@ -1895,20 +1914,39 @@ flyingon.Stream = Object.extend(function () {
     }
 
 
+    Class.all = function () {
 
-    this.init = function (value) {
+        var instance = new Class(),
+            cache = [],
+            index = 0,
+            length = 0,
+            item;
 
-        if (arguments.length > 0)
+        while (item = arguments[index])
         {
-            if (typeof value === 'function')
-            {
-                value(this);
-            }
-            else
-            {
-                this.__cache = [value];
-            }
+            length++;
+
+            (function (item, index) {
+
+                item
+                    .then(function (value) {
+
+                        cache[index] = value;
+
+                        if (!--length)
+                        {
+                            instance.resolve(cache);
+                        }
+                    })
+                    .catch(function (error) {
+                        
+                        instance.reject(error);
+                    });
+
+            })(item, index++);
         }
+
+        return instance;
     }
 
 
@@ -1926,7 +1964,7 @@ flyingon.Stream = Object.extend(function () {
             {
                 try
                 {
-                    fn.call(this, next, cache.shift());
+                    fn.call(this, cache.shift(), next);
                 }
                 catch (e)
                 {
@@ -1944,17 +1982,21 @@ flyingon.Stream = Object.extend(function () {
 
     this.resolve = function (value) {
 
-        var any;
+        var next = this.__next,
+            any;
 
-        if (any = this.__next)
+        if (next)
         {
-            try
+            if (any = this.__fn)
             {
-                this.__fn(any, value);
-            }
-            catch (e)
-            {
-                this.reject(e);
+                try
+                {
+                    any.call(this, value, next);
+                }
+                catch (e)
+                {
+                    this.reject(e);
+                }
             }
         }
         else if (any = this.__cache)
@@ -1971,60 +2013,96 @@ flyingon.Stream = Object.extend(function () {
     this.reject = function (error) {
 
         var target = this,
+            handle,
             fn;
 
         do
         {
             if ((fn = target.__error))
             {
-                try
-                {
-                    fn(error);
-                }
-                catch (e)
-                {
-                    error = e;
-                }
+                fn(error);
+                handle = true;
             }
         }
         while ((target = target.__next));
+
+        if (!handle)
+        {
+            throw error;
+        }
     }
 
 
     this.then = function (fn) {
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
-            fn(value);
+            if (fn)
+            {
+                var result = fn(value);
+
+                if (result !== void 0)
+                {
+                    value = result;
+                }
+            }
+
             next.resolve(value);
         });
     }
 
 
-    this.json = function (fn) {
+    this.combine = function (stream) {
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
-            if (typeof value === 'string')
-            {
-                value = JSON.parse(value);
-            }
+            stream
+                .then(function (thenValue) {
 
-            if (fn)
-            {
-                fn(value);
-            }
-            
-            next.resolve(value);
+                    if (value instanceof Array)
+                    {
+                        thenValue = [value, thenValue];
+                    }
+                    else
+                    {
+                        value.push(thenValue);
+                        thenValue = value;
+                    }
+
+                    next.resolve(thenValue);
+                })
+                .catch(function (error) {
+
+                    next.reject(error);
+                });
         });
     }
 
 
     this.map = function (fn) {
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
             next.resolve(fn(value));
+        });
+    }
+
+
+    this.json = function (fn) {
+
+        return this.registry(function (value, next) {
+
+            if (typeof value === 'string')
+            {
+                value = value ? JSON.parse(value) : null;
+            }
+
+            if (fn)
+            {
+                value = fn(value);
+            }
+
+            next.resolve(value);
         });
     }
 
@@ -2041,7 +2119,7 @@ flyingon.Stream = Object.extend(function () {
         var cache = [];
         var timeout;
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
             if (timeout)
             {
@@ -2063,7 +2141,7 @@ flyingon.Stream = Object.extend(function () {
 
     this.delay = function (time) {
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
             setTimeout(function () {
 
@@ -2078,7 +2156,7 @@ flyingon.Stream = Object.extend(function () {
 
         var timeout;
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
             if (timeout)
             {
@@ -2099,7 +2177,7 @@ flyingon.Stream = Object.extend(function () {
 
         var timeout;
 
-        return this.registry(function (next, value) {
+        return this.registry(function (value, next) {
 
             if (!timeout)
             {
