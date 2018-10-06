@@ -12,11 +12,7 @@
 
 
 
-    // 重定向状态码
-    http.redirectStatus = 299;
 
-
-    
     
     function encodeData(data) {
 
@@ -86,7 +82,6 @@
     }
 
 
-    
     function send(method, url, data, options) {
 
         var stream = new flyingon.Stream(),
@@ -151,7 +146,7 @@
                 {
                     if (this.status === http.redirectStatus)
                     {
-                        location.href = this.statusText;
+                        http.redirect();
                     }
                     else
                     {
@@ -198,7 +193,18 @@
         return stream;
     }
 
+
     
+    // 重定向状态码
+    http.redirectStatus = 299;
+
+
+    // 重定向
+    http.redirect = function () {
+        
+        location.href = 'index.html';
+    }
+
 
     // 自定义ajax开始提交方法
     http.before = function (fn) {
