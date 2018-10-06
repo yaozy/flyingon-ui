@@ -2,7 +2,7 @@ flyingon.renderer('TextBox', function (base) {
 
 
 
-    this.lineHeight = 1;
+    this.lineHeight = false;
 
 
 
@@ -71,11 +71,6 @@ flyingon.renderer('TextBox', function (base) {
         view.firstChild.style.color = value;
     };
 
-
-    this.lineHeight = function (control, view, value) {
-
-        view.firstChild.style.lineHeight = value;
-    };
 
 
     this.textAlign = function (control, view, value) {

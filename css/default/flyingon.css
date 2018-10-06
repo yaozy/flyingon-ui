@@ -93,10 +93,8 @@ span {
   padding: 0.5em 2px;
   outline: none;
   width: 100%;
-  height: 2em;
   line-height: 1em;
   background-color: transparent;
-  vertical-align: middle;
 }
 .f-textbox-button {
   position: absolute;
@@ -1088,19 +1086,19 @@ span {
 }
 .f-tab-direction-top .f-tab-line {
   top: auto;
-  height: 1px;
+  height: 0.5px;
 }
 .f-tab-direction-bottom .f-tab-line {
   bottom: auto;
-  height: 1px;
+  height: 0.5px;
 }
 .f-tab-direction-left .f-tab-line {
   left: auto;
-  width: 1px;
+  width: 0.5px;
 }
 .f-tab-direction-right .f-tab-line {
   right: auto;
-  width: 1px;
+  width: 0.5px;
 }
 .f-tab-direction-top .f-tab-content,
 .f-tab-direction-bottom .f-tab-content {
@@ -1346,13 +1344,14 @@ span {
 .yx-toast {
   position: absolute;
   left: 50%;
-  border: 1px solid silver;
+  border: 1px solid #3a8ee6;
   padding: 10px;
   border-radius: 5px;
-  background-color: white;
+  background-color: #b3d8ff;
   z-index: 30;
   font-size: 16px;
-  box-shadow: 0 0 5px silver;
+  box-shadow: 0 0 5px #3a8ee6;
+  color: #ffffff;
 }
 .yx-toast > * {
   display: inline-block;
