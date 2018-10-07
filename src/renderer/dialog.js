@@ -241,7 +241,7 @@ flyingon.showMessage = function (title, text, type, buttons, focus) {
                 style: 'overflow:hidden;',
                 children: [
                     { Class: 'Label', dock: 'left', width: 50, height: 50, visible: type, className: 'f-message-icon' + (type ? ' f-message-' + type : '') },
-                    { Class: 'Label', dock: 'fill', height: 'auto', text: text }
+                    { Class: 'Label', dock: 'fill', height: 'auto', text: text, nolineHeight: true }
                 ]
             },
             {

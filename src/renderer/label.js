@@ -15,12 +15,16 @@ flyingon.renderer('Label', function (base) {
 
     this.locate = function (control) {
 
-        var cache = base.locate.call(this, control),
-            height = control.offsetHeight;
+        var cache = base.locate.call(this, control);
 
-        if (cache.lineHeight !== height)
+        if (!control.nolineHeight)
         {
-            control.view.style.lineHeight = (cache.lineHeight = height) + 'px';
+            var height = control.offsetHeight;
+
+            if (cache.lineHeight !== height)
+            {
+                control.view.style.lineHeight = (cache.lineHeight = height) + 'px';
+            }
         }
 
         return cache;

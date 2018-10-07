@@ -987,7 +987,7 @@ var flyingon;
         }
         else
         {
-            (this.__storage || (this.__storage = create(this.__defaults)))[name] = value;
+            this[name] = value;
         }
         
         return this;
@@ -5004,7 +5004,7 @@ flyingon.fragment('f-visual', function () {
         }
         else
         {
-            (this.__storage || (this.__storage = flyingon.create(this.__defaults)))[name] = value;
+            this[name] = value;
 
             //如果是有效的属性名则当作自定义属性处理
             if ((any = attributes[name]) === true || (any == null && (attributes[name] = flyingon.__check_attribute(name))))
@@ -9972,7 +9972,7 @@ flyingon.Query = Object.extend(function () {
             cache.height = height;
             style.height = height = height + 'px';
 
-            if (any = this.lineHeight)
+            if (!control.nolineHeight && (any = this.lineHeight))
             {
                 if (any === 1)
                 {
@@ -10802,12 +10802,16 @@ flyingon.renderer('Label', function (base) {
 
     this.locate = function (control) {
 
-        var cache = base.locate.call(this, control),
-            height = control.offsetHeight;
+        var cache = base.locate.call(this, control);
 
-        if (cache.lineHeight !== height)
+        if (!control.nolineHeight)
         {
-            control.view.style.lineHeight = (cache.lineHeight = height) + 'px';
+            var height = control.offsetHeight;
+
+            if (cache.lineHeight !== height)
+            {
+                control.view.style.lineHeight = (cache.lineHeight = height) + 'px';
+            }
         }
 
         return cache;
@@ -12036,7 +12040,7 @@ flyingon.renderer('TextBox', function (base) {
 
 
 
-    this.lineHeight = false;
+    this.lineHeight = 0;
 
 
 
@@ -17012,7 +17016,7 @@ flyingon.showMessage = function (title, text, type, buttons, focus) {
                 style: 'overflow:hidden;',
                 children: [
                     { Class: 'Label', dock: 'left', width: 50, height: 50, visible: type, className: 'f-message-icon' + (type ? ' f-message-' + type : '') },
-                    { Class: 'Label', dock: 'fill', height: 'auto', text: text }
+                    { Class: 'Label', dock: 'fill', height: 'auto', text: text, nolineHeight: true }
                 ]
             },
             {
@@ -24572,7 +24576,7 @@ Object.extend('ToolTip', function () {
         dom.innerHTML = (options.loading ? '<span class="yx-toast-loading"></span>' : '')
             + '<span>' + options.text + '</span>';
     
-        if (options.mask !== false && !mask.parentNode)
+        if (options.mask && !mask.parentNode)
         {
             document.body.appendChild(mask);
         }

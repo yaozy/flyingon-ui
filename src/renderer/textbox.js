@@ -2,7 +2,7 @@ flyingon.renderer('TextBox', function (base) {
 
 
 
-    this.lineHeight = false;
+    this.lineHeight = 0;
 
 
 

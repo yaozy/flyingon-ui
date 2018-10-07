@@ -987,7 +987,7 @@ var flyingon;
         }
         else
         {
-            (this.__storage || (this.__storage = create(this.__defaults)))[name] = value;
+            this[name] = value;
         }
         
         return this;

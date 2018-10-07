@@ -246,7 +246,7 @@
             cache.height = height;
             style.height = height = height + 'px';
 
-            if (any = this.lineHeight)
+            if (!control.nolineHeight && (any = this.lineHeight))
             {
                 if (any === 1)
                 {

@@ -180,7 +180,7 @@ flyingon.fragment('f-visual', function () {
         }
         else
         {
-            (this.__storage || (this.__storage = flyingon.create(this.__defaults)))[name] = value;
+            this[name] = value;
 
             //如果是有效的属性名则当作自定义属性处理
             if ((any = attributes[name]) === true || (any == null && (attributes[name] = flyingon.__check_attribute(name))))

@@ -49,7 +49,7 @@
         dom.innerHTML = (options.loading ? '<span class="yx-toast-loading"></span>' : '')
             + '<span>' + options.text + '</span>';
     
-        if (options.mask !== false && !mask.parentNode)
+        if (options.mask && !mask.parentNode)
         {
             document.body.appendChild(mask);
         }
