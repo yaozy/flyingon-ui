@@ -7161,7 +7161,16 @@ flyingon.TouchEvent = flyingon.Event.extend(function () {
                 }
                 else
                 {
-                    stream.reject(this.statusText);
+                    flyingon.toast.hide();
+
+                    try
+                    {
+                        stream.reject(this.statusText);
+                    }
+                    catch (e)
+                    {
+                        flyingon.showMessage('错误', this.statusText, 'error', 'ok');
+                    }
                 }
                 
                 // 结束处理

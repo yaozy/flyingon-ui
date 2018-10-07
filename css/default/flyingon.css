@@ -1339,7 +1339,7 @@ span {
   right: 0;
   bottom: 0;
   overflow: hidden;
-  z-index: 30;
+  z-index: 300;
 }
 .yx-toast {
   position: absolute;
@@ -1348,7 +1348,7 @@ span {
   padding: 10px;
   border-radius: 5px;
   background-color: #b3d8ff;
-  z-index: 30;
+  z-index: 300;
   font-size: 16px;
   box-shadow: 0 0 5px #3a8ee6;
   color: #ffffff;
