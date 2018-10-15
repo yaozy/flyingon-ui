@@ -3710,10 +3710,12 @@ flyingon.RowCollection = Object.extend._(function () {
             return;
         }
 
+        var stringify = JSON.stringify;
+
         switch (typeof value)
         {
             case 'string':
-                writer.push('"', value.replace(/"/g, '\\"'), '"');
+                writer.push(stringify(value));
                 break;
 
             case 'object':
@@ -3762,7 +3764,7 @@ flyingon.RowCollection = Object.extend._(function () {
                 switch (typeof value)
                 {
                     case 'string':
-                        writer.push(',"', name, '":"', stringify(value), '"');
+                        writer.push(',"', name, '":', stringify(value));
                         break;
 
                     case 'object':
