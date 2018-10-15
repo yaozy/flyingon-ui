@@ -3740,7 +3740,9 @@ flyingon.RowCollection = Object.extend._(function () {
     
     function write_change(writer, data, originalData, names, tables, state) {
         
-        var value, oldValue;
+        var stringify = JSON.stringify,
+            value,
+            oldValue;
         
         writer.push('{', state);
         
@@ -3760,7 +3762,7 @@ flyingon.RowCollection = Object.extend._(function () {
                 switch (typeof value)
                 {
                     case 'string':
-                        writer.push(',"', name, '":"', value.replace(/"/g, '\\"'), '"');
+                        writer.push(',"', name, '":"', stringify(value), '"');
                         break;
 
                     case 'object':
