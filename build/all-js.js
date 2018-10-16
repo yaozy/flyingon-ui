@@ -8,6 +8,7 @@ webminify()
         'base/utils.js',
         'base/stream.js',
         'base/extend.js',
+        'base/math.js',
         'base/i18n.js',
         'base/collection.js',
         'base/serialize.js',
@@ -123,4 +124,4 @@ webminify()
         'web/host.js'
     ])
     .combine('\r\n\r\n\r\n\r\n\r\n')
-    .output('js/flyingon.js');
+    .output('dist/js/flyingon.js');

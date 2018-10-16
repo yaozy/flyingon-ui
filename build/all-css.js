@@ -26,4 +26,4 @@ webminify()
     ])
     .combine('\r\n\r\n\r\n\r\n\r\n')
     .lessToCss()
-    .output('css/default/flyingon.css');
+    .output('dist/css/default/flyingon.css');
