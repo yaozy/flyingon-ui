@@ -2562,20 +2562,11 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
 
 
 
-    var pow = Math.pow;
-
     var round = Math.round;
 
     var toFixed = (0).toFixed;
 
     var cache = new Decimal(0);
-
-
-
-    for (var i = 0; i < 100; i++)
-    {
-        pow[i] = Math.pow(10, i);
-    }
 
 
 
@@ -2674,12 +2665,12 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
         
         if ((e1 = this.e) > e2)
         {
-            this.v += value * pow[e1] / pow[e2];
+            this.v += value * ('1e' + e1) / ('1e' + e2);
         }
         else if (e1 < e2)
         {
             this.e = e2;
-            this.v = this.v * pow[e2] / pow[e1] + value;
+            this.v = this.v * ('1e' + e2) / ('1e' + e1) + value;
         }
         else
         {
@@ -2795,11 +2786,11 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
         {
             if (e1 > e2)
             {
-                value = this.v / (value * pow[e1 - e2]);
+                value = this.v / (value * ('1e' + (e1 - e2)));
             }
             else
             {
-                value = this.v * pow[e2 - e1] / value;
+                value = this.v * ('1e' + (e2 - e1)) / value;
             }
         }
         else
@@ -2829,7 +2820,21 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
 
             if (value > 0)
             {
-                this.v *= pow[value];
+                var e = this.e;
+
+                if (value > e)
+                {
+                    this.e = 0;
+                    this.v *= '1e' + (value - e);
+                }
+                else if (value === e)
+                {
+                    this.e = 0;
+                }
+                else
+                {
+                    this.e -= value;
+                }
             }
             else
             {
@@ -2847,7 +2852,7 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
 
         if ((digits |= 0) < e)
         {
-            this.v = round(this.v * pow[digits] / pow[e]);
+            this.v = round(this.v * ('1e' + digits) / ('1e' + e));
             this.e = digits;
         }
 
@@ -2865,30 +2870,30 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
             {
                 if (e > digits)
                 {
-                    return toFixed.call(round(this.v * pow[digits] / pow[e]) / pow[digits], digits);
+                    return toFixed.call(round(this.v * ('1e' + digits) / ('1e' + e)) / ('1e' + digits), digits);
                 }
 
-                return toFixed.call(this.v / pow[e], digits);
+                return toFixed.call(this.v / ('1e' + e), digits);
             }
 
             return toFixed.call(this.v, digits);
         }
         
-        return e ? '' + round(this.v / pow[e]) : '' + this.v;
+        return e ? '' + round(this.v / ('1e' + e)) : '' + this.v;
     }
 
 
     prototype.valueOf = function () {
         
         var e = this.e;
-        return e ? this.v / pow[e] : this.v;
+        return e ? this.v / ('1e' + e) : this.v;
     }
 
 
     prototype.toString = function (k) {
 
         var e = this.e;
-        return (e ? this.v / pow[e] : this.v).toString(k);
+        return (e ? this.v / ('1e' + e) : this.v).toString(k);
     }
 
 
@@ -2899,7 +2904,7 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
         get: function () {
 
             var e = this.e;
-            return e ? this.v / pow[e] : this.v;
+            return e ? this.v / ('1e' + e) : this.v;
         }
     });
 
@@ -2923,7 +2928,7 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
                 return value;
             }
 
-            return round(items[0] + decimal.slice(0, digits) + '.' + decimal[digits]);
+            return round(items[0] + decimal.slice(0, digits) + '.' + decimal[digits]) / ('1e' + digits);
         }
         
         return round(value);
@@ -2941,12 +2946,6 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
             return new Decimal(this).toFixed(digits);
         }
     }
-
-
-    // test
-    // new Decimal(.1).plus(.2).value === 0.3;
-    // new Decimal(10).mul(12.1).value === 121;
-    // new Decimal(2.135).round(2).value === '2.14';
 
 
 
