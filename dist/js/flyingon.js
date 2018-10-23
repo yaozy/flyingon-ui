@@ -2913,17 +2913,22 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
     // 重载四舍五入方法增加指定小数位数
     Math.round = function (value, digits) {
 
+        if ((value = +value) !== value)
+        {
+            return 0;
+        }
+
+        if (value === (value | 0))
+        {
+            return value;
+        }
+
         if ((digits |= 0) > 0)
         {
-            if ((value = +value) !== value)
-            {
-                return value;
-            }
-
             var items = ('' + value).split('.'),
                 decimal = items[1];
 
-            if (decimal.length <= digits)
+            if (!decimal || decimal.length <= digits)
             {
                 return value;
             }
@@ -2946,6 +2951,12 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
             return new Decimal(this).toFixed(digits);
         }
     }
+
+
+    // test
+    new Decimal(.1).plus(.2).value === 0.3;
+    new Decimal(10).mul(12.1).value === 121;
+    new Decimal(2.135).round(2).value === '2.14';
 
 
 
