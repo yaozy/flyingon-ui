@@ -10,7 +10,46 @@
 
 
     dom.className = 'yx-toast';
-    mask.className = 'yx-toast-mask';
+    mask.className = 'yx-mask';
+
+
+
+    function show(options) {
+
+        var style = dom.style;
+
+        close();
+
+        dom.innerHTML = (options.loading ? '<span class="yx-loading"></span>' : '')
+            + '<span>' + options.text + '</span>';
+    
+        if (options.mask || options.loading && options.mask !== false)
+        {
+            document.body.appendChild(mask);
+        }
+
+        document.body.appendChild(dom);
+
+        style.cssText = options.style || '';
+        style.left = (window.innerWidth - dom.offsetWidth >> 1) + 'px';
+
+        switch (options.position)
+        {
+            case 'top':
+                style.top = options.offset == null ? '.8rem' : options.offset;
+                break;
+
+            case 'bottom':
+                style.bottom = options.offset == null ? '.8rem' : options.offset;
+                break;
+
+            default:
+                style.top = (window.innerHeight - dom.offsetHeight >> 1) + 'px';
+                break;
+        }
+
+        delay = setTimeout(close, options.time || 2500);
+    }
 
 
     function close() {
@@ -22,7 +61,6 @@
         if (any = dom.parentNode)
         {
             any.removeChild(dom);
-            window.removeEventListener('resize', computePosition, true);
         }
 
         if (any = mask.parentNode)
@@ -34,11 +72,14 @@
 
     this.toast = function (options) {
 
-        var style = dom.style;
-
         if (delay)
         {
             clearTimeout(delay);
+        }
+
+        if (!options)
+        {
+            return;
         }
 
         if (typeof options === 'string')
@@ -46,24 +87,18 @@
             options = { text: options };
         }
     
-        dom.innerHTML = (options.loading ? '<span class="yx-toast-loading"></span>' : '')
-            + '<span>' + options.text + '</span>';
-    
-        if (options.mask && !mask.parentNode)
+        if (options.delay > 0)
         {
-            document.body.appendChild(mask);
-        }
+            delay = setTimeout(function () {
 
-        if (!dom.parentNode)
+                show(options);
+
+            }, options.delay);
+        }
+        else
         {
-            (options.host || document.body).appendChild(dom);
-            window.addEventListener('resize', computePosition, true);
+            show(options);
         }
-
-        style.cssText = options.style || '';
-        computePosition();
-
-        delay = setTimeout(close, options.time || 2500);
     }
 
 
@@ -77,15 +112,6 @@
         close();
     }
 
-
-    function computePosition() {
-
-        var style = dom.style,
-            parent = dom.parentNode;
-
-        style.left = (parent.clientWidth - dom.offsetWidth >> 1) + 'px';
-        style.top = (parent.clientHeight - dom.offsetHeight >> 1) + 'px';
-    }
     
 
 }).call(flyingon);
