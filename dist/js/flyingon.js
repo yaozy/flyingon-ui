@@ -29831,7 +29831,7 @@ flyingon.view.Template = Object.extend(function () {
             }
             else
             {
-                y = dom.offsetHeight;
+                y = this.offsetHeight;
                 
                 if (x >= y - 4 && x <= y)
                 {
@@ -29852,7 +29852,7 @@ flyingon.view.Template = Object.extend(function () {
             }
             else
             {
-                y = dom.offsetWidth;
+                y = this.offsetWidth;
                 
                 if (x >= y - 4 && x <= y)
                 {
@@ -29879,24 +29879,32 @@ flyingon.view.Template = Object.extend(function () {
     
     function do_resize(data) {
         
-        var side = data.side;
+        var side = data.side,
+            width = this.offsetWidth,
+            height = this.offsetHeight;
         
         if ((side & 1) === 1) //top
         {
-            this.height(data.height - data.distanceY);
+            this.height(width = data.height - data.distanceY);
         }
         else if ((side & 2) === 2) //bottom
         {
-            this.height(data.height + data.distanceY);
+            this.height(width = data.height + data.distanceY);
         }
         
         if ((side & 4) === 4) //left
         {
-            this.width(data.width - data.distanceX);
+            this.width(height = data.width - data.distanceX);
         }
         else if ((side & 8) === 8) //right
         {
-            this.width(data.width + data.distanceX);
+            this.width(height = data.width + data.distanceX);
+        }
+
+        if (this.__top_control)
+        {
+            this.measure(width, height);
+            this.update();
         }
 
         clear_selection();
@@ -29930,10 +29938,10 @@ flyingon.view.Template = Object.extend(function () {
             if (any = resizable)
             {
                 resizable = {
-                 
+                
                     side: any,
-                    width: control.view.offsetWidth,
-                    height: control.view.offsetHeight
+                    width: control.offsetWidth,
+                    height: control.offsetHeight
                 };
             }
         }
