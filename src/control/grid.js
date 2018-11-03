@@ -858,7 +858,6 @@ flyingon.GridColumns = Object.extend(function () {
             start = locked[0],
             end = this.length,
             column,
-            left,
             any;
 
         if (end <= 0)
@@ -909,7 +908,10 @@ flyingon.GridColumns = Object.extend(function () {
         end = any > end ? end : any;
 
         //处理跨列偏移
-        start -= this[start].__offset; 
+        if (this[start])
+        {
+            start -= this[start].__offset;
+        } 
 
         if (any = this.grid.oncolumnstart)
         {

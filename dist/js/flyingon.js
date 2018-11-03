@@ -22722,7 +22722,6 @@ flyingon.GridColumns = Object.extend(function () {
             start = locked[0],
             end = this.length,
             column,
-            left,
             any;
 
         if (end <= 0)
@@ -22773,7 +22772,10 @@ flyingon.GridColumns = Object.extend(function () {
         end = any > end ? end : any;
 
         //处理跨列偏移
-        start -= this[start].__offset; 
+        if (this[start])
+        {
+            start -= this[start].__offset;
+        } 
 
         if (any = this.grid.oncolumnstart)
         {
@@ -29829,7 +29831,7 @@ flyingon.view.Template = Object.extend(function () {
             }
             else
             {
-                y = this.offsetHeight;
+                y = dom.offsetHeight;
                 
                 if (x >= y - 4 && x <= y)
                 {
@@ -29850,7 +29852,7 @@ flyingon.view.Template = Object.extend(function () {
             }
             else
             {
-                y = this.offsetWidth;
+                y = dom.offsetWidth;
                 
                 if (x >= y - 4 && x <= y)
                 {
@@ -29901,91 +29903,6 @@ flyingon.view.Template = Object.extend(function () {
     };
     
     
-    
-    function move_start(e) {
-        
-        if (this.trigger('move-start') !== false)
-        {
-            var view = this.view,
-                dom = view.cloneNode(true),
-                style = view.style,
-                rect = view.getBoundingClientRect(),
-                data = { dom: dom, left: rect.left, top: rect.top },
-                control = this,
-                any;
-
-            style.borderStyle = 'dashed';
-            style.borderColor = 'red';
-
-            style = dom.style;
-            style.opacity = 0.2;
-            style.left = rect.left + 'px';
-            style.top = rect.top + 'px';
-
-            document.body.appendChild(dom);
-
-            //获取移动容器及偏移位置
-            while (any = control.parent)
-            {
-                control = any;
-            }
-
-            rect = control.view.getBoundingClientRect();
-
-            data.host = control;
-            data.offsetX = e.clientX - rect.left;
-            data.offsetY = e.clientY - rect.top;
-
-            return data;
-        }
-    };
-    
-    
-    function do_move(data, e) {
-        
-        var style = data.dom.style,
-            x = data.distanceX,
-            y = data.distanceY,
-            list = data.host.findDropTarget(data.offsetX + x, data.offsetY + y),
-            parent = list[0],
-            item = list[1];
-
-        if (item)
-        {
-            if (this !== item)
-            {
-                parent.splice(parent.indexOf(item), 0, item);
-            }
-        }
-        else if (this.parent !== parent)
-        {
-        }
-        
-        style.left = data.left + x + 'px';
-        style.top = data.top + y + 'px';
-        
-        this.trigger('move');
-    };
-    
-    
-    function move_end(data, e) {
-        
-        var dom = data.dom,
-            style1 = dom.style,
-            style2 = this.view.style,
-            parent;
-
-        if (parent = dom.parentNode)
-        {
-            parent.removeChild(dom);
-        }
-
-        style2.borderStyle = style1.borderStyle;
-        style2.borderColor = style1.borderColor;
-        
-        this.trigger('move-end');
-    };
-    
 
     function clear_selection() {
 
@@ -30005,7 +29922,6 @@ flyingon.view.Template = Object.extend(function () {
     on(document, 'mousedown', function (e) {
         
         var control = flyingon.findControl(e.target),
-            parent,
             any;
         
         if (control && !((any = control.__storage) && any.disabled) && 
@@ -30016,8 +29932,8 @@ flyingon.view.Template = Object.extend(function () {
                 resizable = {
                  
                     side: any,
-                    width: control.offsetWidth,
-                    height: control.offsetHeight
+                    width: control.view.offsetWidth,
+                    height: control.view.offsetHeight
                 };
             }
         }
