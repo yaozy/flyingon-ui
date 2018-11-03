@@ -2614,6 +2614,11 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
     var prototype = (window.Decimal = Decimal).prototype;
 
 
+    window.decimal = function (value) {
+
+        return Decimal.call(cache, value);
+    }
+
 
     prototype.clone = function () {
 
@@ -2623,13 +2628,6 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
         result.e = this.e;
 
         return result;
-    }
-
-
-    prototype.reset = function (value) {
-
-        Decimal.call(this, value);
-        return this;
     }
 
 
@@ -2951,13 +2949,6 @@ Function.prototype.bind || (Function.prototype.bind = function (context) {
             return new Decimal(this).toFixed(digits);
         }
     }
-
-
-    // test
-    new Decimal(.1).plus(.2).value === 0.3;
-    new Decimal(10).mul(12.1).value === 121;
-    new Decimal(2.135).round(2).value === '2.14';
-
 
 
 
@@ -17350,11 +17341,16 @@ flyingon.renderer('Dialog', 'Panel', function (base) {
     this.center = function (control) {
 
         var body = document.body,
-            style = control.view.style;
+            style = control.view.style,
+            top = ((window.innerHeight || document.documentElement.clientHeight) - control.offsetHeight >> 1) - body.clientLeft;
+
+        if (top < 0)
+        {
+            top = 0;
+        }
 
         style.left = (control.offsetLeft = body.clientWidth - control.offsetWidth >> 1) + 'px';
-        style.top = (control.offsetTop = ((window.innerHeight || document.documentElement.clientHeight) 
-            - control.offsetHeight >> 1) - body.clientLeft) + 'px';
+        style.top = (control.offsetTop = top) + 'px';
     };
 
 
@@ -21868,13 +21864,11 @@ flyingon.Control.extend('Tree', function (base) {
 
     var Class = flyingon.Label;
 
-    var create = flyingon.create;
-
 
 
     this.init = function (options) {
 
-        //列头控件集合
+        // 列头控件集合
         this.__cells = [];
 
         if (options)
@@ -21887,17 +21881,21 @@ flyingon.Control.extend('Tree', function (base) {
                 {
                     this[name](options[name]);
                 }
+                else
+                {
+                    this[name] = options[name];
+                }
             }
         }
     };
 
 
 
-    //列类型
+    // 列类型
     this.type = '';
 
 
-    //绑定的字段名
+    // 绑定的字段名
     this.defineProperty('name', '', { 
         
         set: function (name, value) {
@@ -21915,7 +21913,7 @@ flyingon.Control.extend('Tree', function (base) {
     });
 
 
-    //标题 值为数组则为多行标题
+    // 标题 值为数组则为多行标题
     this.defineProperty('title', null, { 
         
         set: function (name, value) {
@@ -21926,7 +21924,7 @@ flyingon.Control.extend('Tree', function (base) {
             {
                 this.view = false;
 
-                //销毁原单元格
+                // 销毁原单元格
                 if (any = this.__cells)
                 {
                     for (var i = any.length - 1; i >= 0; i--)
@@ -21942,7 +21940,7 @@ flyingon.Control.extend('Tree', function (base) {
 
                 if (this.grid)
                 {
-                    //原来有跨列可现在有跨列则需重计算列
+                    // 原来有跨列可现在有跨列则需重计算列
                     this.grid.update(any || this.__cells.__span > 0);
                 }
             }
@@ -21954,7 +21952,7 @@ flyingon.Control.extend('Tree', function (base) {
     });
 
 
-    //列大小(支持固定数字及百分比)
+    // 列大小(支持固定数字及百分比)
     this.defineProperty('size', '100', {
 
         set: function (name, value) {
@@ -21969,10 +21967,10 @@ flyingon.Control.extend('Tree', function (base) {
     });
 
 
-    //对齐方式
-    //left
-    //center
-    //right
+    // 对齐方式
+    // left
+    // center
+    // right
     this.defineProperty('align', '', {
 
         set: function (name, value) {
@@ -21982,7 +21980,7 @@ flyingon.Control.extend('Tree', function (base) {
     });
 
 
-    //是否只读
+    // 是否只读
     this.defineProperty('readonly', false, {
 
         set: function (name, value) {
@@ -21995,7 +21993,7 @@ flyingon.Control.extend('Tree', function (base) {
 
     this.__visible = true;
 
-    //是否显示
+    // 是否显示
     this.defineProperty('visible', true, {
 
         set: function (name, value) {
@@ -22012,31 +22010,31 @@ flyingon.Control.extend('Tree', function (base) {
     });
 
 
-    //是否可调整列宽
+    // 是否可调整列宽
     this.defineProperty('resizable', true);
 
 
-    //是否可点击列头排序
+    // 是否可点击列头排序
     this.defineProperty('sortable', true);
 
 
-    //是否可拖动调整顺序
+    // 是否可拖动调整顺序
     this.defineProperty('draggable', true);
 
 
-    //是否可获取焦点
+    // 是否可获取焦点
     this.defineProperty('focused', false);
 
 
-    //过滤方式
-    // this.defineProperty('filter', 'auto');
+    // 过滤方式
+    //  this.defineProperty('filter', 'auto');
 
 
-    //汇总设置
-    //MAX:      最大值
-    //MIN:      最小值
-    //AVG:      平均值
-    //SUM:      求和
+    // 汇总设置
+    // MAX:      最大值
+    // MIN:      最小值
+    // AVG:      平均值
+    // SUM:      求和
     this.defineProperty('summary', '', { 
         
         set: function update() {
@@ -22052,7 +22050,7 @@ flyingon.Control.extend('Tree', function (base) {
     });
 
 
-    //汇总数字精度(小数位数)
+    // 汇总数字精度(小数位数)
     this.defineProperty('precision', 0, {
 
         dataType: 'int'   
@@ -22182,7 +22180,7 @@ flyingon.Control.extend('Tree', function (base) {
     };
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
        var control = new Class();
@@ -22196,7 +22194,7 @@ flyingon.Control.extend('Tree', function (base) {
     };
 
 
-    //同步表格列处理(新创建的控件需要赋值,变更时需同步以前创建的控件值)
+    // 同步表格列处理(新创建的控件需要赋值,变更时需同步以前创建的控件值)
     this.__sync_column = function (name, value) {
 
         var storage = this.__storage2 || (this.__storage2 = flyingon.create(null));
@@ -22207,7 +22205,7 @@ flyingon.Control.extend('Tree', function (base) {
 
 
 
-    //绑定表格列渲染器
+    // 绑定表格列渲染器
     flyingon.renderer.bind(this, 'GridColumn');
 
 
@@ -22232,7 +22230,7 @@ flyingon.Control.extend('Tree', function (base) {
 
 
 
-//行号列
+// 行号列
 flyingon.GridColumn.extend(function (base) {
 
 
@@ -22252,7 +22250,7 @@ flyingon.GridColumn.extend(function (base) {
     this.defaultValue('resizable', false);
 
 
-    //是否显示行号
+    // 是否显示行号
     this.defineProperty('no', false, {
 
         set: function (name, value) {
@@ -22262,7 +22260,7 @@ flyingon.GridColumn.extend(function (base) {
     });
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
         var control = new Class();
@@ -22286,7 +22284,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//选择列
+// 选择列
 flyingon.GridColumn.extend(function (base) {
 
 
@@ -22305,7 +22303,7 @@ flyingon.GridColumn.extend(function (base) {
     this.defaultValue('resizable', false);
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row) {
 
        var control = new Class();
@@ -22326,14 +22324,14 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//检查框列
+// 检查框列
 flyingon.GridColumn.extend(function (base) {
 
 
     var Class = flyingon.CheckBox;
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
         var control = new Class();
@@ -22351,18 +22349,18 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//文本框列
+// 文本框列
 flyingon.GridColumn.extend(function (base) {
 
 
     var Class = flyingon.TextBox;
 
 
-    //修改为可获取焦点
+    // 修改为可获取焦点
     this.defaultValue('focused', true);
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
        var control = new Class();
@@ -22380,7 +22378,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//文本按钮列
+// 文本按钮列
 flyingon.GridColumn.extend(function (base) {
 
 
@@ -22389,35 +22387,35 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-    //修改为可获取焦点
+    // 修改为可获取焦点
     this.defaultValue('focused', true);
 
 
-    //是否可输入
+    // 是否可输入
     this.defineProperty('inputable', false, { 
         
         set: this.__sync_column
     });
 
 
-    //按钮图标
+    // 按钮图标
     this.defineProperty('icon', '', {
         
         set: this.__sync_column
     });
 
 
-    //按钮显示模式
-    //show      总是显示
-    //none      不显示
-    //hover     鼠标划过时显示
+    // 按钮显示模式
+    // show      总是显示
+    // none      不显示
+    // hover     鼠标划过时显示
     this.defineProperty('button', 'show', {
         
         set: this.__sync_column
     });
 
 
-    //按钮大小
+    // 按钮大小
     this['button-size'] = this.defineProperty('buttonSize', 16, {
         
         set: this.__sync_column
@@ -22425,7 +22423,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
         var control = new Class(),
@@ -22452,14 +22450,14 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//数字列
+// 数字列
 flyingon.GridColumn.extend(function (base) {
 
 
     var Class = flyingon.Number;
 
 
-    //修改为可获取焦点
+    // 修改为可获取焦点
     this.defaultValue('focused', true);
 
 
@@ -22469,7 +22467,7 @@ flyingon.GridColumn.extend(function (base) {
     flyingon.fragment('f-Number', this, this.__sync_column);
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
         var control = new Class(),
@@ -22496,29 +22494,27 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//下拉框列
+// 下拉框列
 flyingon.GridColumn.extend(function (base) {
 
 
     var Class = flyingon.ComboBox;
 
-    var create = flyingon.create;
 
-
-    //修改为可获取焦点
+    // 修改为可获取焦点
     this.defaultValue('focused', true);
 
 
-    //扩展下拉框定义
+    // 扩展下拉框定义
     flyingon.fragment('f-ComboBox', this, this.__sync_column);
 
 
-    //下拉数据
+    // 下拉数据
     this.defineProperty('items', null, {
         
         set: function (name, value) {
 
-            //转换成flyingon.DataList
+            // 转换成flyingon.DataList
             flyingon.DataList.create(value, set_items, this);
         }
     });
@@ -22531,7 +22527,7 @@ flyingon.GridColumn.extend(function (base) {
     };
 
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
         var control = new Class(),
@@ -22564,7 +22560,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//日期列
+// 日期列
 flyingon.GridColumn.extend(function (base) {
 
 
@@ -22573,14 +22569,14 @@ flyingon.GridColumn.extend(function (base) {
     var keys = 'format,min,max,time,today,clear'.split(',').pair();
 
 
-    //修改为可获取焦点
+    // 修改为可获取焦点
     this.defaultValue('focused', true);
 
 
     flyingon.fragment('f-Date', this);
     
 
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
         var control = new Class(),
@@ -22613,18 +22609,18 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//时间列
+// 时间列
 flyingon.GridColumn.extend(function (base) {
 
 
     var Class = flyingon.Time;
 
 
-    //修改为可获取焦点
+    // 修改为可获取焦点
     this.defaultValue('focused', true);
 
     
-    //创建单元格控件
+    // 创建单元格控件
     this.createControl = function (row, name) {
 
        var control = new Class();
@@ -22642,7 +22638,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
 
-//表格列集合
+// 表格列集合
 flyingon.GridColumns = Object.extend(function () {
 
 
@@ -22715,7 +22711,7 @@ flyingon.GridColumns = Object.extend(function () {
 
 
 
-    //计算可见列索引范围
+    // 计算可见列索引范围
     this.__compute_visible = function (x, scroll) {
 
         var locked = this.__locked,
@@ -22734,7 +22730,7 @@ flyingon.GridColumns = Object.extend(function () {
         x += locked[2];
         end -= locked[1];
 
-        //计算开始位置
+        // 计算开始位置
         for (var i = start; i < end; i++)
         {
             if ((column = this[i]) && column.__visible && column.__start + column.__size >= x)
@@ -22744,7 +22740,7 @@ flyingon.GridColumns = Object.extend(function () {
             }
         }
 
-        //计算结束位置
+        // 计算结束位置
         any = x + this.__arrange_size - locked[2] - locked[3];
 
         for (var i = start; i < end; i++)
@@ -22756,22 +22752,22 @@ flyingon.GridColumns = Object.extend(function () {
             }
         }
 
-        //记录可见范围
+        // 记录可见范围
         this.__visible_start = start;
         this.__visible_end = end;
 
-        //滚动时如果未超出上次渲染范围则返回true
+        // 滚动时如果未超出上次渲染范围则返回true
         if (scroll && this.__show_start <= start && this.__show_end >= end)
         {
             return true;
         }
 
-        //多渲染部分列以减少滚动处理
+        // 多渲染部分列以减少滚动处理
         any = end + 2;
         end = this.length - locked[1];
         end = any > end ? end : any;
 
-        //处理跨列偏移
+        // 处理跨列偏移
         if (this[start])
         {
             start -= this[start].__offset;
@@ -22792,11 +22788,11 @@ flyingon.GridColumns = Object.extend(function () {
     };
 
 
-    //计算列宽
+    // 计算列宽
     this.__compute_size = function (width) {
 
         var locked = this.__locked,
-            group = this.grid.__group_size, //分组偏移大小
+            group = this.grid.__group_size, // 分组偏移大小
             size = group,
             mod = 0,
             start = locked[0],
@@ -22806,7 +22802,7 @@ flyingon.GridColumns = Object.extend(function () {
         this.__arrange_size = width;
         this.__persent = false;
 
-        //计算前锁定
+        // 计算前锁定
         if (start > 0)
         {
             mod = compute_size(this, width, group, 0, start, mod);
@@ -22815,7 +22811,7 @@ flyingon.GridColumns = Object.extend(function () {
             size += (locked[2] = this.__size);
         }
 
-        //计算后锁定
+        // 计算后锁定
         if ((any = locked[1]) > 0)
         {
             mod = compute_size(this, width, 0, end - any, end, mod);
@@ -22824,14 +22820,14 @@ flyingon.GridColumns = Object.extend(function () {
             size += (locked[3] = this.__size);
         }
 
-        //计算滚动区
+        // 计算滚动区
         compute_size(this, width, group + locked[2], start, end, mod);
 
         this.__size += size;
     };
 
 
-    //计算列大小
+    // 计算列大小
     function compute_size(columns, total, left, start, end, mod) {
 
         var width = 0,
@@ -22846,7 +22842,7 @@ flyingon.GridColumns = Object.extend(function () {
             column = columns[start];
 
             column.__index = start++;
-            column.__offset = 0; //前置偏移
+            column.__offset = 0; // 前置偏移
 
             if (!column.__visible)
             {
@@ -22879,17 +22875,17 @@ flyingon.GridColumns = Object.extend(function () {
             left += size;
             width += size;
 
-            //检测是否需要跨列处理
+            // 检测是否需要跨列处理
             if (span < 0 && column.__span)
             {
                 span = start - 1;
             }
         }
 
-        //记录宽度和
+        // 记录宽度和
         columns.__size = width;
 
-        //处理跨列
+        // 处理跨列
         if (span >= 0)
         {
             start = span;
@@ -22916,14 +22912,14 @@ flyingon.GridColumns = Object.extend(function () {
     };
 
 
-    //计算跨列
+    // 计算跨列
     function compute_span(columns, index, end, cells) {
 
         for (var i = cells.length - 1; i >= 0; i--)
         {
             var cell = cells[i],
                 span = cell.__span,
-                count = span, //实际跨列数
+                count = span, // 实际跨列数
                 column,
                 size;
 
@@ -22931,7 +22927,7 @@ flyingon.GridColumns = Object.extend(function () {
             {
                 size = columns[index].__size;
 
-                while (span > 0) //计算到结束位置则提前终止
+                while (span > 0) // 计算到结束位置则提前终止
                 {
                     if (index + span < end && (column = columns[index + span]))
                     {
@@ -22956,13 +22952,13 @@ flyingon.GridColumns = Object.extend(function () {
                 cell.__size = size;
             }
 
-            //实际跨列数
+            // 实际跨列数
             cell.columnSpan = count;
         }
     };
 
 
-    //缓存列名
+    // 缓存列名
     function cache_name(columns) {
 
         var keys = columns.__keys = flyingon.create(null),
@@ -22982,14 +22978,14 @@ flyingon.GridColumns = Object.extend(function () {
     };
 
 
-    //查找指定名称的表格列
+    // 查找指定名称的表格列
     this.find = function (name) {
 
         return (this.__keys || cache_name(this))[name];
     };
 
 
-    //同步因分组隐藏的列
+    // 同步因分组隐藏的列
     this.__sync_visible = function () {
 
         for (var i = this.length - 1; i >= 0; i--)
@@ -23027,25 +23023,25 @@ flyingon.GridColumns = Object.extend(function () {
 
 
 
-//表格行
+// 表格行
 flyingon.GridRow = Object.extend._(function () {
 
     
-    //行id
+    // 行id
     this.id = 0;
 
-    //上级行
+    // 上级行
     this.parent = null;
 
-    //行数据
+    // 行数据
     this.data = null;
     
-    //是否展开
+    // 是否展开
     this.expanded = false;
 
 
 
-    //获取行级别
+    // 获取行级别
     this.level = function () {
 
         var parent = this.parent,
@@ -23061,7 +23057,7 @@ flyingon.GridRow = Object.extend._(function () {
     };
 
 
-    //获取或设置当前行是否勾选
+    // 获取或设置当前行是否勾选
     this.checked = function (checked) {
 
         if (checked === void 0)
@@ -23087,7 +23083,7 @@ flyingon.GridRow = Object.extend._(function () {
     };
 
 
-    //销毁
+    // 销毁
     this.dispose = function () {
 
         var length = this.length;
@@ -23113,39 +23109,39 @@ flyingon.GridRow = Object.extend._(function () {
 
 
 
-//分组行
+// 分组行
 flyingon.GroupGridRow = Object.extend._(function (base) {
 
 
 
-    //分组行标记
+    // 分组行标记
     this.__group_row = true;
 
 
-    //上级行
+    // 上级行
     this.parent = null;
 
-    //行数据
+    // 行数据
     this.data = null;
 
 
-    //分组列名
+    // 分组列名
     this.name = '';
 
-    //行级别
+    // 行级别
     this.level = 0;
 
 
-    //是否展开
+    // 是否展开
     this.expanded = false;
 
 
-    //总子项数(含子项的子项)
+    // 总子项数(含子项的子项)
     this.total = 0;
 
 
 
-    //计算汇总信息
+    // 计算汇总信息
     this.compute = function (column, name, fn, summary) {
 
         var data = this.data,
@@ -23157,7 +23153,7 @@ flyingon.GroupGridRow = Object.extend._(function (base) {
         }
         else if ((any = this.length) > 0)
         {
-            //如果子行是分组行,先计算子分组
+            // 如果子行是分组行,先计算子分组
             if (this.__sub_group)
             {
                 for (var i = 0; i < any; i++)
@@ -23178,7 +23174,7 @@ flyingon.GroupGridRow = Object.extend._(function (base) {
 
 
 
-    //销毁
+    // 销毁
     this.dispose = function () {
 
         var length = this.length;
@@ -23203,7 +23199,7 @@ flyingon.GroupGridRow = Object.extend._(function (base) {
 
 
 
-//表格视图
+// 表格视图
 flyingon.GridView = flyingon.defineClass(Array, function () {
 
 
@@ -23211,13 +23207,13 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     this.init = function (grid) {
 
         this.grid = grid;
-        this.view = []; //显示视图集
+        this.view = []; // 显示视图集
         this.keys = flyingon.create(null);
     };
 
 
 
-    //从dataset加载数据行
+    // 从dataset加载数据行
     this.dataset = function (dataset) {
 
         var grid = this.grid,
@@ -23239,7 +23235,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //根据数据集初始化表格行
+    // 根据数据集初始化表格行
     function init_rows(Class, keys, grid, view, parent, rows) {
 
         var row, any;
@@ -23263,22 +23259,22 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //切换分组
+    // 切换分组
     this.__change_group = function (groups) {
 
-        //如果当前是分组视图,需先销毁原分组行
+        // 如果当前是分组视图,需先销毁原分组行
         if (this.__group_view)
         {
             ungroup_view(this);
         }
 
-        //如果当前有排序则重新排序
+        // 如果当前有排序则重新排序
         if (this.__sort)
         {
             this.sort.apply(this, this.__sort);
         }
 
-        //标记是否分组视图
+        // 标记是否分组视图
         if (this.__group_view = !!groups)
         {
             group_view(this, groups);
@@ -23288,7 +23284,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //分组视图
+    // 分组视图
     function group_view(self, groups) {
 
         var rows = self.splice(0);
@@ -23324,7 +23320,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
                 row.level = level;
                 row.total = rows.length;
                 
-                //标记子行是否是分组行
+                // 标记子行是否是分组行
                 if (row.__sub_group = next)
                 {
                     rows = group_rows(Class, grid, row, rows, groups, index, level + 1);
@@ -23372,13 +23368,13 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //解除分组
+    // 解除分组
     function ungroup_view(self) {
 
         var rows = self.splice(0),
             any;
 
-        //显示分组列
+        // 显示分组列
         self.grid.__columns.__sync_visible();
 
         if (rows.length > 0)
@@ -23420,7 +23416,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
 
 
 
-    //同步展开视图
+    // 同步展开视图
     this.__sync_view = function () {
 
         var view = this.view;
@@ -23459,7 +23455,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
 
 
 
-    //展开指定行(仅供界面操作用)
+    // 展开指定行(仅供界面操作用)
     this.__expand_row = function (row) {
 
         if (row && !row.expanded && this.grid.trigger('expand', 'row', row) !== false)
@@ -23478,13 +23474,13 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
             }
             else
             {
-                return false; //告知展开后无子节点
+                return false; // 告知展开后无子节点
             }
         }
     };
 
 
-    //收拢指定行(仅供界面操作用)
+    // 收拢指定行(仅供界面操作用)
     this.__collapse_row = function (row) {
 
         if (row && row.expanded && row.length > 0 && this.grid.trigger('collapse') !== false)
@@ -23497,7 +23493,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //获取展开表格行集合
+    // 获取展开表格行集合
     function expand_rows(rows, exports) {
 
         var row;
@@ -23517,7 +23513,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //获取展开表格行数量
+    // 获取展开表格行数量
     function expand_count(rows) {
 
         var length = rows.length,
@@ -23536,14 +23532,14 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //根据id查找指定行
+    // 根据id查找指定行
     this.find = function (id) {
 
         return this.keys[id] || null;
     };
 
 
-    //排序
+    // 排序
     this.sort = function (name, desc, tree) {
 
         if (this.length > 0)
@@ -23623,7 +23619,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //通过数据源增加表格行
+    // 通过数据源增加表格行
     this.__add = function (index, rows, parent) {
 
         if (parent)
@@ -23676,7 +23672,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    //通过数据源移除表格行
+    // 通过数据源移除表格行
     this.__remove = function (index, rows, parent) {
 
         var keys = this.keys,
@@ -23713,7 +23709,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
 
 
 
-    //销毁
+    // 销毁
     this.dispose = function () {
 
         for (var i = this.length - 1; i >= 0; i--)
@@ -23739,7 +23735,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
 
 
 
-//表格控件
+// 表格控件
 flyingon.Control.extend('Grid', function (base) {
 
 
@@ -23762,20 +23758,20 @@ flyingon.Control.extend('Grid', function (base) {
 
 
 
-    //默认锁定行
+    // 默认锁定行
     this.__locked_top = this.__locked_bottom = 0;
 
 
-    //列位置或顺序已经变更
+    // 列位置或顺序已经变更
     this.__column_dirty = true;
 
 
-    //分组偏移
+    // 分组偏移
     this.__group_size = 0;
 
 
 
-    //表格列
+    // 表格列
     this.defineProperty('columns', null, {
 
         fn: function (value) {
@@ -23811,7 +23807,7 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //分组框高度
+    // 分组框高度
     this.defineProperty('group', 0, {
 
         set: function (name, value) {
@@ -23830,7 +23826,7 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //列头大小
+    // 列头大小
     this.defineProperty('header', 30, {
 
         set: function (name, value) {
@@ -23844,7 +23840,7 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //过滤栏高度
+    // 过滤栏高度
     this.defineProperty('filter', 0, {
 
         set: function (name, value) {
@@ -23858,7 +23854,7 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //锁定 锁定多个方向可按 left->right->top->bottom 顺序以空格分隔
+    // 锁定 锁定多个方向可按 left->right->top->bottom 顺序以空格分隔
     this.defineProperty('locked', '', {
 
         set: function (name, value) {
@@ -23882,18 +23878,18 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //行高
+    // 行高
     this['row-height'] = this.defineProperty('rowHeight', 25);
 
 
-    //分组设置
+    // 分组设置
     this.defineProperty('groups', '', {
 
         set: function (name, value) {
 
             var view = this.__view;
 
-            this.__groups = value = value && value.match(/\w+/g) || null;
+            this.__groups = value = value && value.match(/\S+/g) || null;
             this.__group_size = value ? value.length * 20 : 0;
 
             if (view.length > 0)
@@ -23909,23 +23905,23 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //是否只读
+    // 是否只读
     this.defineProperty('readonly', true);
 
 
-    //滚条时是否复用以前行的控件
+    // 滚条时是否复用以前行的控件
     this.defineProperty('reuse', false);
 
 
-    //选择模式
-    //0  仅选择单元格
-    //1  选择行
-    //2  选择列
-    //3  选择行及列
+    // 选择模式
+    // 0  仅选择单元格
+    // 1  选择行
+    // 2  选择列
+    // 3  选择行及列
     this['selected-mode'] = this.defineProperty('selectedMode', 0);
 
 
-    //树列名
+    // 树列名
     this['tree-column'] = this.defineProperty('treeColumn', '', {
 
         set: function (name, value) {
@@ -23935,11 +23931,11 @@ flyingon.Control.extend('Grid', function (base) {
     });
 
 
-    //树列是否显示图标
+    // 树列是否显示图标
     this['tree-icon'] = this.defineProperty('treeIcon', true);
 
 
-    //数据集
+    // 数据集
     this.defineProperty('dataset', null, {
 
         fn: function (value) {
@@ -23987,7 +23983,7 @@ flyingon.Control.extend('Grid', function (base) {
 
 
 
-    //获取错误标题信息(检验时用)
+    // 获取错误标题信息(检验时用)
     this.__error_title = function (control) {
 
         var column = control.column;
@@ -23996,7 +23992,7 @@ flyingon.Control.extend('Grid', function (base) {
 
 
     
-    //获取指定索引行或行集合
+    // 获取指定索引行或行集合
     this.rows = function (index) {
         
         var view = this.__view;
@@ -24011,7 +24007,7 @@ flyingon.Control.extend('Grid', function (base) {
 
 
 
-    //获取当前渲染视图
+    // 获取当前渲染视图
     this.currentView = function () {
     
         var view = this.__view;
@@ -24039,7 +24035,7 @@ flyingon.Control.extend('Grid', function (base) {
 
 
 
-    //展开行
+    // 展开行
     this.expand = function (row) {
 
         var view = this.__view,
@@ -24075,7 +24071,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //展开行到指定级别
+    // 展开行到指定级别
     this.expandTo = function (row, level) {
 
         if (arguments.length < 2)
@@ -24126,7 +24122,7 @@ flyingon.Control.extend('Grid', function (base) {
                 }
                 else
                 {
-                    //收拢最后一级
+                    // 收拢最后一级
                     for (var j = row.length - 1; j >= 0; j--)
                     {
                         var item = row[j];
@@ -24145,7 +24141,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //收拢行
+    // 收拢行
     this.collapse = function (row) {
 
         var view = this.__view,
@@ -24182,21 +24178,50 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //获取勾选中的行集合
+    // 获取勾选中的行集合
     this.checkedRows = function () {
 
         return this.__checked_rows;
     };
 
 
-    //获取当前行
+    // 删除选中行
+    this.removeCheckedRows = function () {
+
+        var rows = this.__checked_rows;
+
+        if (rows && rows.length > 0)
+        {
+            var dataset = this.dataset();
+
+            rows.sort(function (a, b) {
+
+                return a.__show_index > b.__show_index ? -1 : 1;
+            });
+
+            for (var i = rows.length; i--;)
+            {
+                var row = dataset.uniqueId(rows[i].id);
+
+                if (row)
+                {
+                    row.remove();
+                }
+            }
+        }
+
+        return rows;
+    }
+
+
+    // 获取当前行
     this.current = function () {
 
         return this.__current || null;
     };
 
 
-    //切换当前行
+    // 切换当前行
     this.__set_current = function (row, patch) {
 
         var any = this.__current;
@@ -24236,11 +24261,11 @@ flyingon.Control.extend('Grid', function (base) {
 
 
     
-    //标记订阅所有dataset变更动作
+    // 标记订阅所有dataset变更动作
     this.__subscribe_all = true;
 
 
-    //处理数据源变更通知
+    // 处理数据源变更通知
     this.subscribeBind = function (dataset, action) {
 
         var view = this.__view,
@@ -24275,7 +24300,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //值变更处理
+    // 值变更处理
     this.__change_value = function (control) {
 
         var dataset = this.__dataset,
@@ -24293,7 +24318,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //同步控件属性值
+    // 同步控件属性值
     this.__sync_value = function (name, value) {
 
 
@@ -24311,7 +24336,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //刷新表格
+    // 刷新表格
     this.update = function (change) {
 
         var patch = this.__view_patch;
@@ -24334,7 +24359,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //更新标记
+    // 更新标记
     var update_tag = 1;
     
     this.__compute_columns = function () {
@@ -24366,7 +24391,7 @@ flyingon.Control.extend('Grid', function (base) {
     };
 
 
-    //测量自动大小
+    // 测量自动大小
     this.onmeasure = function () {
         
         var autoWidth = this.__auto_width,
@@ -24425,7 +24450,7 @@ flyingon.Control.extend('Grid', function (base) {
 
 
 
-//定义或获取表格汇总函数
+// 定义或获取表格汇总函数
 flyingon.Grid.summary = (function () {
     
 
@@ -24434,7 +24459,7 @@ flyingon.Grid.summary = (function () {
 
     function fn(type, fn, summary) {
 
-        //不区分大小写
+        // 不区分大小写
         type = type.toLowerCase();
 
         if (typeof fn === 'function')

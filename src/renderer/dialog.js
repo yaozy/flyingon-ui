@@ -153,11 +153,16 @@ flyingon.renderer('Dialog', 'Panel', function (base) {
     this.center = function (control) {
 
         var body = document.body,
-            style = control.view.style;
+            style = control.view.style,
+            top = ((window.innerHeight || document.documentElement.clientHeight) - control.offsetHeight >> 1) - body.clientLeft;
+
+        if (top < 0)
+        {
+            top = 0;
+        }
 
         style.left = (control.offsetLeft = body.clientWidth - control.offsetWidth >> 1) + 'px';
-        style.top = (control.offsetTop = ((window.innerHeight || document.documentElement.clientHeight) 
-            - control.offsetHeight >> 1) - body.clientLeft) + 'px';
+        style.top = (control.offsetTop = top) + 'px';
     };
 
 

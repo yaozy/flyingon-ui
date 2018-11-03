@@ -54,6 +54,11 @@
     var prototype = (window.Decimal = Decimal).prototype;
 
 
+    window.decimal = function (value) {
+
+        return Decimal.call(cache, value);
+    }
+
 
     prototype.clone = function () {
 
@@ -63,13 +68,6 @@
         result.e = this.e;
 
         return result;
-    }
-
-
-    prototype.reset = function (value) {
-
-        Decimal.call(this, value);
-        return this;
     }
 
 
@@ -391,13 +389,6 @@
             return new Decimal(this).toFixed(digits);
         }
     }
-
-
-    // test
-    new Decimal(.1).plus(.2).value === 0.3;
-    new Decimal(10).mul(12.1).value === 121;
-    new Decimal(2.135).round(2).value === '2.14';
-
 
 
 
