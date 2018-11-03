@@ -197,6 +197,7 @@ span {
   opacity: 0.1;
   z-index: 100;
   background-color: silver;
+  cursor: default;
 }
 .f-waiting:after {
   content: '';

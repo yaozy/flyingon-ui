@@ -29862,17 +29862,7 @@ flyingon.view.Template = Object.extend(function () {
             }
         }
 
-        if (cursor)
-        {
-            cursor += '-resize';
-        }
-        else
-        {
-            cursor = this.cursor();
-        }
-        
-        dom.style.cursor = cursor || '';
-        
+        document.body.style.cursor = cursor && cursor + '-resize' || '';
         return side;
     };
     
@@ -29984,9 +29974,14 @@ flyingon.view.Template = Object.extend(function () {
             {
                 resizable = (control.__check_resize || check_resize).call(control, any, e);
             }
-            else if (!((any = control.__storage) && any.disabled))
+            else
             {
-                control.trigger(new MouseEvent(e));
+                document.body.style.cursor = '';
+
+                if (!((any = control.__storage) && any.disabled))
+                {
+                    control.trigger(new MouseEvent(e));
+                }
             }
         }
     });
@@ -30003,6 +29998,7 @@ flyingon.view.Template = Object.extend(function () {
         {
             if (any = resizable)
             {
+                document.body.style.cursor = '';
                 resizable = 0;
             }
 
