@@ -24,8 +24,7 @@ flyingon.renderer('GridColumn', function (base) {
 
     function render_multi(writer, column, cells, height) {
 
-        var width = column.__size,
-            length = cells.length,
+        var length = cells.length,
             y1 = 0,
             y2,
             cell;
@@ -48,8 +47,6 @@ flyingon.renderer('GridColumn', function (base) {
 
     function render_header(writer, column, cell, y, width, height) {
 
-        var any;
-
         cell.row = null;
         cell.column = column;
         cell.defaultClass += ' f-grid-cell';
@@ -58,8 +55,7 @@ flyingon.renderer('GridColumn', function (base) {
             'px;top:' + y +
             'px;width:' + width + 
             'px;height:' + height + 
-            'px;line-height:' + height + 'px;' + 
-            (cell.columnSpan ? 'z-index:1;' : '');
+            'px;line-height:' + height + 'px;';
 
         cell.renderer.render(writer, cell, render);
     };
@@ -112,7 +108,7 @@ flyingon.renderer('GridColumn', function (base) {
     };
 
 
-    //计算网格高度
+    // 计算网格高度
     this.__resize_height = function (column, height) {
 
         var cells = column.__cells,
@@ -173,7 +169,7 @@ flyingon.renderer('GridRow', function (base) {
 
         if (!cells)
         {
-            row.view = true; //标记已渲染
+            row.view = true; // 标记已渲染
             cells = row.__cells = {};
         }
 
@@ -185,7 +181,7 @@ flyingon.renderer('GridRow', function (base) {
 
                 if (cell = cells[any])
                 {
-                    //处理树列
+                    // 处理树列
                     if (column.__tree_cell)
                     {
                         fragment.appendChild(view = row.view);
@@ -199,13 +195,13 @@ flyingon.renderer('GridRow', function (base) {
                         {
                             style = view.style;
                             style.left = column.__start +  'px';
-                            style.height = ((any = cell.rowSpan) ? ++any * height : height) + 'px';
+                            style.height = height + 'px';
                         }
                     }
 
                     fragment.appendChild(view = cell.view);
 
-                    //自定义显示前处理
+                    // 自定义显示前处理
                     if (any = column.onshowing)
                     {
                         any.call(column, cell, row);
@@ -223,10 +219,8 @@ flyingon.renderer('GridRow', function (base) {
                         style = view.style;
                         style.left = column.__start + 'px';
 
-                        any = (any = cell.columnSpan) ? column.__span_size(any) : 0;
-                        style.width = column.__size + any + 'px';
-
-                        style.height = ((any = cell.rowSpan) ? ++any * height : height) + 'px';
+                        style.width = column.__size + 'px';
+                        style.height = height + 'px';
                     }
                 }
                 else if (cell = this.render(writer, row, column, y, height))
@@ -250,46 +244,16 @@ flyingon.renderer('GridRow', function (base) {
             span,
             any;
 
-        //自定义渲染单元格
+        // 自定义渲染单元格
         if (any = column.onrender)
         {
             any.call(column, cell, row, column);
-
-            if (any = cell.rowSpan) 
-            {
-                if ((any |= 0) > 0)
-                {
-                    span = 1;
-                    height += any * height;
-                }
-                else
-                {
-                    any = 0;
-                }
-
-                cell.rowSpan = any;
-            }
-
-            if (any = cell.columnSpan) 
-            {
-                if ((any |= 0) > 0)
-                {
-                    span = 1;
-                    width += column.__span_size(any);
-                }
-                else
-                {
-                    any = 0;
-                }
-
-                cell.columnSpan = any;
-            }
         }
 
         cell.row = row;
         cell.column = column;
 
-        //自定义显示前处理
+        // 自定义显示前处理
         if (any = column.onshowing)
         {
             any.call(column, cell, row);
@@ -571,27 +535,27 @@ flyingon.renderer('Grid', function (base) {
 
 
 
-    //拖动列时的辅助线
+    // 拖动列时的辅助线
     var dom_drag = document.createElement('div');
 
-    //调整列宽时的辅助线
+    // 调整列宽时的辅助线
     var dom_resize = document.createElement('div');
 
 
-    //textContent || innerText
+    // textContent || innerText
     var text_name = this.__text_name;
 
-    //是否禁止列头点击事件
+    // 是否禁止列头点击事件
     var click_disabled = false;
 
 
-    //动态管理子节点的临时节点
+    // 动态管理子节点的临时节点
     var dom_fragment = document.createDocumentFragment();
 
-    //动态生成html片段的dom容器
+    // 动态生成html片段的dom容器
     var dom_host = document.createElement('div');
 
-    //html模板
+    // html模板
     var template = '<div class="f-grid-center"></div>'
         + '<div class="f-grid-right" style="display:none;"></div>'
         + '<div class="f-grid-left" style="display:none;"></div>'
@@ -603,7 +567,7 @@ flyingon.renderer('Grid', function (base) {
 
 
     
-    //初始化dom
+    // 初始化dom
     dom_drag.innerHTML = '<div class="f-grid-drag-body"><div></div></div>';
     dom_drag.className = 'f-grid-drag';
     dom_drag.style.width = '20px';
@@ -625,7 +589,7 @@ flyingon.renderer('Grid', function (base) {
 
         render.call(this, writer, grid);
 
-        writer.push(' onclick="flyingon.Grid.onclick.call(this, event)" onkeydown="flyingon.Grid.onkeydown.call(this, event)"',
+        writer.push(' onclick="flyingon.Grid.onmouseup.call(this, event)" onkeydown="flyingon.Grid.onkeydown.call(this, event)"',
                 ' onmousedown="flyingon.Grid.onmousedown.call(this, event)">',
             '<div class="f-grid-head">',
                 '<div class="f-grid-group-box" style="height:', group, 'px;line-height:', group, 'px;', group < 2 ? 'display:none;' : '', '"></div>',
@@ -740,16 +704,16 @@ flyingon.renderer('Grid', function (base) {
             {
                 if (cell.parent === grid)
                 {
-                    if (cell.row) //数据行
+                    if (cell.row) // 数据行
                     {
                         if (!cell.__column_check)
                         {
                             change_focus(grid, cell);
                         }
                     }
-                    else if (any = cell.column) //列头
+                    else if (any = cell.column) // 列头
                     {
-                        check_drag(this, dom, any, '', (cell.columnSpan | 0) + 1);
+                        check_drag(this, dom, any, '', 1);
                     }
 
                     break;
@@ -761,7 +725,7 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    flyingon.Grid.onclick = function (e) {
+    flyingon.Grid.onmouseup = function (e) {
 
         if (click_disabled)
         {
@@ -789,7 +753,7 @@ flyingon.renderer('Grid', function (base) {
                     if ((any = flyingon.findControl(dom)) &&
                         !any.row && any.column &&
                         !any.__column_check &&
-                        !any.columnSpan && any.column.name()) //列头且无跨列
+                        any.column.name()) // 列头且无跨列
                     {
                         sort_column(grid, any);
                     }
@@ -812,12 +776,6 @@ flyingon.renderer('Grid', function (base) {
             (grid = flyingon.findControl(this)) &&
             (column = cell.column))
         {
-            //处理跨列
-            if (any = cell.columnSpan)
-            {
-                column = grid.__columns[column.__index + any];
-            }
-
             if (column && column.resizable())
             {
                 var head = grid.view_resize,
@@ -837,7 +795,6 @@ flyingon.renderer('Grid', function (base) {
     flyingon.Grid.resize = function (e) {
 
         var grid = flyingon.findControl(this),
-            left = 0,
             dom = this,
             any;
 
@@ -881,7 +838,7 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //同步使用tab造成焦点位置变化的问题
+    // 同步使用tab造成焦点位置变化的问题
     function sync_focus() {
 
         var dom = document.activeElement,
@@ -1037,7 +994,7 @@ flyingon.renderer('Grid', function (base) {
         {
             column.storage().size = any;
 
-            //触发列调整大小事件
+            // 触发列调整大小事件
             if (any = grid.oncolumnresize)
             {
                 any.call(grid, column, storage.__size, this.size);
@@ -1070,7 +1027,7 @@ flyingon.renderer('Grid', function (base) {
                 name: name,
                 index: column.__index,
                 count: count,
-                from: from  //标记从分组框拖出
+                from: from  // 标记从分组框拖出
             },
             event,
             start_drag,
@@ -1099,22 +1056,22 @@ flyingon.renderer('Grid', function (base) {
         this.left = any.left;
         this.top = any.top;
 
-        //从分组框拖出
+        // 从分组框拖出
         if (this.from)
         {
             dom.style.cssText = 'position:absolute;z-index:2;left:' 
                 + dom.offsetLeft + 'px;top:' 
                 + dom.offsetTop + 'px;';
             
-            //记录原分组信息
+            // 记录原分组信息
             this.groups = (any = grid.__groups).join(' ');
 
             any.splice(any.indexOf(this.name), 1);
 
-            //清空原分组信息避免拖动结束后无法设置groups
+            // 清空原分组信息避免拖动结束后无法设置groups
             grid.__storage.groups = ' ';
         }
-        else //拖动列
+        else // 拖动列
         {
             any = dom.cloneNode(true);
 
@@ -1125,7 +1082,7 @@ flyingon.renderer('Grid', function (base) {
 
             dom = any;
 
-            //隐藏列头
+            // 隐藏列头
             any = grid.__columns;
 
             while (count--)
@@ -1156,7 +1113,7 @@ flyingon.renderer('Grid', function (base) {
             view,
             height;
 
-        //拖动到分组框
+        // 拖动到分组框
         if (this.to = this.name && y < this.group)
         {
             y = 4;
@@ -1172,7 +1129,7 @@ flyingon.renderer('Grid', function (base) {
                 x = 8;
             }
         }
-        else //拖到列区
+        else // 拖到列区
         {
             x = column_index(this, grid, x);
             y = this.group;
@@ -1229,18 +1186,18 @@ flyingon.renderer('Grid', function (base) {
             size = 0,
             column;
 
-        //在左锁定区
+        // 在左锁定区
         if (start && locked[2] > x)
         {
             end = start;
             start = 0;
         }
-        else if (locked[1] && x > (offset = columns.__arrange_size - locked[3])) //在右锁定区
+        else if (locked[1] && x > (offset = columns.__arrange_size - locked[3])) // 在右锁定区
         {
             start = end - locked[1];
             x += offset;
         }
-        else //滚动区域
+        else // 滚动区域
         {
             offset = -grid.scrollLeft | 0;
             x -= offset;
@@ -1296,7 +1253,7 @@ flyingon.renderer('Grid', function (base) {
             any.parentNode.removeChild(any);
         }
 
-        //拖到分组框
+        // 拖到分组框
         if (this.to)
         {
             for (var i = 0; i < count; i++)
@@ -1314,7 +1271,7 @@ flyingon.renderer('Grid', function (base) {
                 any = list.join(' ');
             }
 
-            //如果与拖动前相同的分组信息则不刷新数据
+            // 如果与拖动前相同的分组信息则不刷新数据
             if (any === this.groups)
             {
                 grid.__groups = any.split(' ');
@@ -1328,19 +1285,19 @@ flyingon.renderer('Grid', function (base) {
         }
         else 
         {
-            //从分组框拖出时需同步分组
+            // 从分组框拖出时需同步分组
             if (this.from)
             {
                 grid.groups(grid.__groups.join(' '));
             }
 
-            //显示列
+            // 显示列
             for (var i = 0; i < count; i++)
             {
                 columns[index + i].__visible = true;
             }
 
-            //如果顺序发生变化则调整列顺序
+            // 如果顺序发生变化则调整列顺序
             if (this.at !== index)
             {
                 reorder_column(columns, this.at, index, count);
@@ -1351,7 +1308,7 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //调整列顺序
+    // 调整列顺序
     function reorder_column(columns, newIndex, oldIndex, count) {
 
         var splice = [].splice,
@@ -1378,7 +1335,7 @@ flyingon.renderer('Grid', function (base) {
 
 
 
-    //列头大小发生变化
+    // 列头大小发生变化
     this.header = function (grid, view, value) {
 
         var columns = grid.__columns,
@@ -1422,22 +1379,22 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //更新表格内容
+    // 更新表格内容
     this.update = function (grid) {
 
         var storage = grid.__storage || grid.__defaults,
             columns = grid.__columns,
-            width = grid.__compute_columns(), //计算表格列
+            width = grid.__compute_columns(), // 计算表格列
             height = grid.offsetHeight - grid.borderTop - grid.borderBottom,
             any;
 
-        //显示分组
+        // 显示分组
         if ((any = storage.group) > 0)
         {
             height -= any;
         }
 
-        //控制水平滚动条
+        // 控制水平滚动条
         if (columns.__size > width && !grid.__auto_width)
         {
             any = flyingon.hscroll_height;
@@ -1450,28 +1407,28 @@ flyingon.renderer('Grid', function (base) {
 
         grid.view_body.style.bottom = any + 'px';
 
-        //显示列头
+        // 显示列头
         if ((any = storage.header) > 0)
         {
             height -= any;
             this.__show_header(grid, columns, any);
         }
 
-        //显示过滤栏
+        // 显示过滤栏
         if ((any = storage.filter) > 0)
         {
             height -= any;
             this.__show_filter(grid, columns, any);
         }
 
-        //显示内容
+        // 显示内容
         any = grid.currentView();
         any = this.__show_body(grid, any, grid.__auto_height ? any.length * storage.rowHeight : height);
 
-        //排列横向锁定区域
+        // 排列横向锁定区域
         this.__layout_locked(grid, columns.__locked, any);
         
-        //处理自动宽高
+        // 处理自动宽高
         width = columns.__size;
 
         if (grid.__auto_width)
@@ -1490,23 +1447,23 @@ flyingon.renderer('Grid', function (base) {
 
 
 
-    //显示列头
+    // 显示列头
     this.__show_header = function (grid, columns, height) {
 
         var view = grid.view_head.children[3],
             locked = columns.__locked,
             any;
 
-        //group
+        // group
         view = view.previousSibling;
 
-        //left lock
+        // left lock
         if (any = locked[0])
         {
             this.show_header(view, columns, 0, any, height);
         }
 
-        //right lock
+        // right lock
         view = view.previousSibling;
 
         if (any = locked[1])
@@ -1514,16 +1471,16 @@ flyingon.renderer('Grid', function (base) {
             this.show_header(view, columns, columns.length - any, columns.length, height);
         }
 
-        //scroll
+        // scroll
         this.show_header(view.previousSibling, columns, columns.__show_start, columns.__show_end, height);
 
-        //sort arrow
+        // sort arrow
         sync_sort(grid.view_sort);
     };
 
 
 
-    //排列横向锁定区域
+    // 排列横向锁定区域
     this.__layout_locked = function (grid, locked, vscroll) {
 
         var view = grid.view_head,
@@ -1550,10 +1507,10 @@ flyingon.renderer('Grid', function (base) {
         var dom = view.firstChild,
             style = dom.style;
 
-        //center
+        // center
         style[flyingon.rtl ? 'right' : 'left'] = -scroll + 'px';
 
-        //right
+        // right
         dom = dom.nextSibling;
         style = dom.style;
 
@@ -1567,7 +1524,7 @@ flyingon.renderer('Grid', function (base) {
             style.display = 'none';
         }
 
-        //left
+        // left
         dom = dom.nextSibling;
         style = dom.style;
 
@@ -1581,7 +1538,7 @@ flyingon.renderer('Grid', function (base) {
             style.display = 'none';
         }
 
-        //group
+        // group
         style = dom.nextSibling.style;
 
         if (group > 0)
@@ -1597,7 +1554,7 @@ flyingon.renderer('Grid', function (base) {
 
 
 
-    //显示列头
+    // 显示列头
     this.show_header = function (view, columns, start, end, height) {
 
         var writer = [],
@@ -1668,7 +1625,7 @@ flyingon.renderer('Grid', function (base) {
             }
         }
 
-        //移除原来显示的节点
+        // 移除原来显示的节点
         while (any = view.lastChild)
         {
             view.removeChild(any);
@@ -1678,13 +1635,13 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //显示过滤栏
+    // 显示过滤栏
     this.__show_filter = function (grid, column, height) {
 
     };
 
 
-    //显示内容
+    // 显示内容
     this.__show_body = function (grid, rows, height) {
 
         var view = grid.view_body.lastChild,
@@ -1697,7 +1654,7 @@ flyingon.renderer('Grid', function (base) {
             vscroll = size > height && !grid.__auto_height,
             any;
 
-        //记录是否树列
+        // 记录是否树列
         if (any = tree && grid.__columns.find(tree))
         {
             any.__tree_cell = true;
@@ -1707,7 +1664,7 @@ flyingon.renderer('Grid', function (base) {
         grid.view_scroll.firstChild.style.height = (vscroll ? size || 1 : 1) + 'px';
         grid.view_body.style[flyingon.rtl ? 'left' : 'right'] = (vscroll ? flyingon.vscroll_width : 0) + 'px';
 
-        //显示顶部锁定
+        // 显示顶部锁定
         if (start > 0)
         {
             view.style.display = '';
@@ -1723,7 +1680,7 @@ flyingon.renderer('Grid', function (base) {
             view.style.display = 'none';
         }
 
-        //显示底部锁定
+        // 显示底部锁定
         view = view.previousSibling;
 
         if ((any = grid.__locked_bottom) > 0)
@@ -1741,11 +1698,11 @@ flyingon.renderer('Grid', function (base) {
             view.style.display = 'none';
         }
 
-        //调整滚动区位置
+        // 调整滚动区位置
         view = view.previousSibling;
         view.style.top = -(grid.scrollTop | 0) + 'px';
 
-        //显示滚动区
+        // 显示滚动区
         rows.__arrange_size = height;
 
         if (vscroll)
@@ -1769,7 +1726,7 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //计算行滚动行显示范围
+    // 计算行滚动行显示范围
     this.__visible_rows = function (grid, rows, top, scroll) {
 
         var start = grid.__locked_top,
@@ -1783,7 +1740,7 @@ flyingon.renderer('Grid', function (base) {
         }
 
         any = (rows.__arrange_size / rowHeight) | 0;
-        any += start + 5; //多渲染部分行以减少滚动处理
+        any += start + 5; // 多渲染部分行以减少滚动处理
 
         if (any < end)
         {
@@ -1794,23 +1751,13 @@ flyingon.renderer('Grid', function (base) {
         {
             return true;
         }
-
-        if (any = grid.onrowstart)
-        {
-            any = any.call(grid, rows, start);
-
-            if (any >= 0)
-            {
-                start = 0;
-            }
-        }
         
         rows.__show_start = start;
         rows.__show_end = end;
     };
 
 
-    //显示表格行集
+    // 显示表格行集
     this.__show_rows = function (grid, view, rows, start, end, scroll) {
 
         var columns = grid.__columns,
@@ -1821,7 +1768,7 @@ flyingon.renderer('Grid', function (base) {
             top = scroll ? start * rowHeight : 0,
             any;
 
-        //group
+        // group
         view = view.lastChild;
 
         if (any = grid.__group_size)
@@ -1830,10 +1777,10 @@ flyingon.renderer('Grid', function (base) {
         }
         else if (view.firstChild)
         {
-            view.innerHTML = ''; //销毁原分组行视图
+            view.innerHTML = ''; // 销毁原分组行视图
         }
 
-        //left lock
+        // left lock
         view = view.previousSibling;
 
         if (column_start)
@@ -1845,7 +1792,7 @@ flyingon.renderer('Grid', function (base) {
             view.innerHTML = '';
         }
 
-        //right lock
+        // right lock
         view = view.previousSibling;
 
         if (any = locked[1])
@@ -1857,12 +1804,12 @@ flyingon.renderer('Grid', function (base) {
             view.innerHTML = '';
         }
 
-        //scroll
+        // scroll
         this.show_rows(grid, view.previousSibling, rows, start, end, columns, columns.__show_start, columns.__show_end, top, rowHeight);
     };
 
 
-    //显示表格行
+    // 显示表格行
     this.show_rows = function (grid, view, rows, start, end, columns, column_start, column_end, top, height) {
 
         var writer = [], 
@@ -1875,7 +1822,7 @@ flyingon.renderer('Grid', function (base) {
         {
             if (row = rows[i])
             {
-                row.__show_index = i; //记录显示行索引以便于事件处理
+                row.__show_index = i; // 记录显示行索引以便于事件处理
                 row.renderer.show(fragment, writer, row, columns, column_start, column_end, top, height, tag);
 
                 top += height;
@@ -1904,7 +1851,7 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //显示分组行头
+    // 显示分组行头
     this.show_group = function (grid, view, rows, start, end, top, height) {
 
         var writer = [],
@@ -1924,7 +1871,7 @@ flyingon.renderer('Grid', function (base) {
             {
                 if (row.__group_row)
                 {
-                    //记录行索引以支持事件定位
+                    // 记录行索引以支持事件定位
                     row.__show_index = index;
 
                     text = any = fn && fn(row) || row.text + ' (' + row.total + ')';
@@ -2006,7 +1953,7 @@ flyingon.renderer('Grid', function (base) {
 
 
 
-    //渲染分组框
+    // 渲染分组框
     this.__render_group = function (grid) {
 
         var writer = [],
@@ -2041,7 +1988,7 @@ flyingon.renderer('Grid', function (base) {
 
 
 
-    //处理水平滚动
+    // 处理水平滚动
     this.__do_hscroll = function (grid, left) {
 
         var columns = grid.__columns,
@@ -2049,17 +1996,17 @@ flyingon.renderer('Grid', function (base) {
             height = (grid.__storage || grid.__defaults).header,
             name = flyingon.rtl ? 'right' : 'left',
             scroll = -left + 'px',
-            update = !columns.__compute_visible(left, true), //计算可见列范围并获取是否超出上次的渲染范围
+            update = !columns.__compute_visible(left, true), // 计算可见列范围并获取是否超出上次的渲染范围
             start = columns.__show_start,
             end = columns.__show_end;
 
-        //重渲染列头
+        // 重渲染列头
         if (height > 0)
         {
-            //控制滚动位置
+            // 控制滚动位置
             view.style[name] = scroll;
 
-            //超出上次渲染的范围则重新渲染
+            // 超出上次渲染的范围则重新渲染
             if (update)
             {
                 this.show_header(view, columns, start, end, height);
@@ -2101,7 +2048,7 @@ flyingon.renderer('Grid', function (base) {
     };
 
 
-    //处理竖直滚动
+    // 处理竖直滚动
     this.__do_vscroll = function (grid, top) {
 
         var rows = grid.currentView(),

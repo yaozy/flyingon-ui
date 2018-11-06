@@ -311,6 +311,7 @@ span {
 }
 .f-listbox {
   border: 1px solid silver;
+  padding: 4px;
   overflow: auto;
 }
 .f-listbox-selected {

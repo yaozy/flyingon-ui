@@ -14,50 +14,49 @@
     // 小数处理类
     function Decimal(value) {
 
-        var v, e;
+        var v, d;
 
         if (value)
         {
             if (value instanceof Decimal)
             {
-                e = value.e;
+                d = value.d;
                 v = value.v;
             }
             else if ((value = +value) === value)
             {
                 if (value === (value | 0))
                 {
-                    v = value || 0;
+                    v = value;
                 }
-                else if (e = (v = ('' + value).split('.'))[1])
+                else if (d = (v = ('' + value).split('.'))[1])
                 {
-                    e = e.length;
+                    d = d.length;
                     v = +(v[0] + v[1]);
                 }
                 else
                 {
-                    e = 0;
+                    d = 0;
                     v = value;
                 }
             }
         }
 
         this.v = v || 0;
-        this.e = e || 0;
+        this.d = d || 0;
 
         return this;
     }
     
 
 
+    Decimal.singleton = Decimal.bind(new Decimal(0));
+
+
+
 
     var prototype = (window.Decimal = Decimal).prototype;
 
-
-    window.decimal = function (value) {
-
-        return Decimal.call(cache, value);
-    }
 
 
     prototype.clone = function () {
@@ -65,7 +64,7 @@
         var result = Object.create(prototype);
 
         result.v = this.v;
-        result.e = this.e;
+        result.d = this.d;
 
         return result;
     }
@@ -73,7 +72,7 @@
 
     prototype.plus = function (value) {
 
-        var e1, e2;
+        var d1, d2;
 
         if (!value)
         {
@@ -82,7 +81,7 @@
         
         if (value instanceof Decimal)
         {
-            e2 = value.e;
+            d2 = value.d;
             value = value.v;
         }
         else if ((value = +value) !== value)
@@ -91,24 +90,26 @@
         }
         else if (value === (value | 0))
         {
-            e2 = 0;
+            d2 = 0;
+        }
+        else if (d2 = (value = ('' + value).split('.'))[1])
+        {
+            d2 = d2.length;
+            value = +(value[0] + value[1]);
         }
         else
         {
-            value = Decimal.call(cache, value);
-
-            e2 = value.e;
-            value = value.v;
+            d2 = 0;
         }
         
-        if ((e1 = this.e) > e2)
+        if ((d1 = this.d) > d2)
         {
-            this.v += value * ('1e' + e1) / ('1e' + e2);
+            this.v += value * ('1e' + d1) / ('1e' + d2);
         }
-        else if (e1 < e2)
+        else if (d1 < d2)
         {
-            this.e = e2;
-            this.v = this.v * ('1e' + e2) / ('1e' + e1) + value;
+            this.d = d2;
+            this.v = this.v * ('1e' + d2) / ('1e' + d1) + value;
         }
         else
         {
@@ -127,11 +128,11 @@
 
     prototype.mul = function (value) {
 
-        var e;
+        var d;
 
         if (!value)
         {
-            this.v = this.e = 0;
+            this.v = this.d = 0;
             return this;
         }
 
@@ -142,7 +143,7 @@
 
         if (value instanceof Decimal)
         {
-            e = value.e;
+            d = value.d;
             value = value.v;
         }
         else if ((value = +value) !== value)
@@ -151,14 +152,16 @@
         }
         else if (value === (value | 0))
         {
-            e = 0;
+            d = 0;
+        }
+        else if (d = (value = ('' + value).split('.'))[1])
+        {
+            d = d.length;
+            value = +(value[0] + value[1]);
         }
         else
         {
-            value = Decimal.call(cache, value);
-
-            e = value.e;
-            value = value.v;
+            d = 0;
         }
 
         if (value)
@@ -167,11 +170,11 @@
         }
         else
         {
-            this.v = this.e = 0;
+            this.v = this.d = 0;
             return this;
         }
 
-        this.e += e;
+        this.d += d;
 
         return this;
     }
@@ -179,11 +182,11 @@
 
     prototype.div = function (value) {
 
-        var e1, e2;
+        var d1, d2;
         
         if (!value)
         {
-            this.v = this.e = 0;
+            this.v = this.d = 0;
             return this;
         }
 
@@ -194,41 +197,43 @@
 
         if (value instanceof Decimal)
         {
-            e2 = value.e;
+            d2 = value.d;
             value = this.v / value.v;
         }
         else if ((value = +value) !== value)
         {
-            this.v = this.e = 0;
+            this.v = this.d = 0;
             return this;
         }
         else if (value === (value | 0))
         {
-            e2 = 0;
+            d2 = 0;
+        }
+        else if (d2 = (value = ('' + value).split('.'))[1])
+        {
+            d2 = d2.length;
+            value = +(value[0] + value[1]);
         }
         else
         {
-            value = Decimal.call(cache, value);
-
-            e2 = value.e;
-            value = value.v;
+            d2 = 0;
         }
 
         if (!value)
         {
-            this.v = this.e = 0;
+            this.v = this.d = 0;
             return this;
         }
 
-        if ((e1 = this.e) !== e2)
+        if ((d1 = this.d) !== d2)
         {
-            if (e1 > e2)
+            if (d1 > d2)
             {
-                value = this.v / (value * ('1e' + (e1 - e2)));
+                value = this.v / (value * ('1e' + (d1 - d2)));
             }
             else
             {
-                value = this.v * ('1e' + (e2 - e1)) / value;
+                value = this.v * ('1e' + (d2 - d1)) / value;
             }
         }
         else
@@ -239,7 +244,7 @@
         value = Decimal.call(cache, value);
 
         this.v = value.v;
-        this.e = value.e;
+        this.d = value.d;
 
         return this;
     }
@@ -258,25 +263,25 @@
 
             if (value > 0)
             {
-                var e = this.e;
+                var d = this.d;
 
-                if (value > e)
+                if (value > d)
                 {
-                    this.e = 0;
-                    this.v *= '1e' + (value - e);
+                    this.d = 0;
+                    this.v *= '1e' + (value - d);
                 }
-                else if (value === e)
+                else if (value === d)
                 {
-                    this.e = 0;
+                    this.d = 0;
                 }
                 else
                 {
-                    this.e -= value;
+                    this.d -= value;
                 }
             }
             else
             {
-                this.e -= value;
+                this.d -= value;
             }
         }
 
@@ -286,12 +291,12 @@
 
     prototype.round = function (digits) {
 
-        var e = this.e;
+        var d = this.d;
 
-        if ((digits |= 0) < e)
+        if ((digits |= 0) < d)
         {
-            this.v = round(this.v * ('1e' + digits) / ('1e' + e));
-            this.e = digits;
+            this.v = round(this.v * ('1e' + digits) / ('1e' + d));
+            this.d = digits;
         }
 
         return this;
@@ -300,38 +305,38 @@
 
     prototype.toFixed = function (digits) {
 
-        var e = this.e;
+        var d = this.d;
 
         if ((digits |= 0) > 0)
         {
-            if (e)
+            if (d)
             {
-                if (e > digits)
+                if (d > digits)
                 {
-                    return toFixed.call(round(this.v * ('1e' + digits) / ('1e' + e)) / ('1e' + digits), digits);
+                    return toFixed.call(round(this.v * ('1e' + digits) / ('1e' + d)) / ('1e' + digits), digits);
                 }
 
-                return toFixed.call(this.v / ('1e' + e), digits);
+                return toFixed.call(this.v / ('1e' + d), digits);
             }
 
             return toFixed.call(this.v, digits);
         }
         
-        return e ? '' + round(this.v / ('1e' + e)) : '' + this.v;
+        return d ? '' + round(this.v / ('1e' + d)) : '' + this.v;
     }
 
 
     prototype.valueOf = function () {
         
-        var e = this.e;
-        return e ? this.v / ('1e' + e) : this.v;
+        var d = this.d;
+        return d ? this.v / ('1e' + d) : this.v;
     }
 
 
     prototype.toString = function (k) {
 
-        var e = this.e;
-        return (e ? this.v / ('1e' + e) : this.v).toString(k);
+        var d = this.d;
+        return (d ? this.v / ('1e' + d) : this.v).toString(k);
     }
 
 
@@ -341,17 +346,36 @@
 
         get: function () {
 
-            var e = this.e;
-            return e ? this.v / ('1e' + e) : this.v;
+            var d = this.d;
+            return d ? this.v / ('1e' + d) : this.v;
         }
     });
 
 
 
-    // 重载四舍五入方法增加指定小数位数
-    Math.round = function (value, digits) {
 
-        if ((value = +value) !== value)
+    // 扩展数字方法
+    prototype = Number.prototype;
+
+
+    // 注: 不同浏览器toFixed有差异, chrome使用的是银行家舍入规则
+    // 银行家舍入: 所谓银行家舍入法, 其实质是一种四舍六入五取偶(又称四舍六入五留双)法
+    // 简单来说就是: 四舍六入五考虑, 五后非零就进一, 五后为零看奇偶, 五前为奇应舍去, 五前为偶要进一
+    // 此处统一处理为四舍五入
+    if ((1.115).toFixed(2) === '1.11')
+    {
+        prototype.toFixed = function (digits) {
+
+            return Decimal.call(cache, this).toFixed(digits);
+        }
+    }
+
+
+    prototype.round = function (digits) {
+
+        var value = +this;
+
+        if (value !== value)
         {
             return 0;
         }
@@ -364,30 +388,25 @@
         if ((digits |= 0) > 0)
         {
             var items = ('' + value).split('.'),
-                decimal = items[1];
+                d = items[1];
 
-            if (!decimal || decimal.length <= digits)
+            if (!d || d.length <= digits)
             {
                 return value;
             }
 
-            return round(items[0] + decimal.slice(0, digits) + '.' + decimal[digits]) / ('1e' + digits);
+            return round(items[0] + d.slice(0, digits) + '.' + d[digits]) / ('1e' + digits);
         }
         
         return round(value);
     }
 
 
-    // 注: 不同浏览器toFixed有差异, chrome使用的是银行家舍入规则
-    // 银行家舍入: 所谓银行家舍入法, 其实质是一种四舍六入五取偶(又称四舍六入五留双)法
-    // 简单来说就是: 四舍六入五考虑, 五后非零就进一, 五后为零看奇偶, 五前为奇应舍去, 五前为偶要进一
-    // 此处统一处理为四舍五入
-    if ((1.115).toFixed(2) === '1.11')
-    {
-        Number.prototype.toFixed = function (digits) {
 
-            return new Decimal(this).toFixed(digits);
-        }
+    // 重载四舍五入方法增加指定小数位数
+    Math.round = function (value, digits) {
+
+        return (+value).round(digits);
     }
 
 

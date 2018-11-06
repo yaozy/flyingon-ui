@@ -170,6 +170,10 @@
     //  this.defineProperty('filter', 'auto');
 
 
+    // 单元格同值合并方式
+    this.defineProperty('merge', 'none');
+
+
     // 汇总设置
     // MAX:      最大值
     // MIN:      最小值
@@ -911,16 +915,6 @@ flyingon.GridColumns = Object.extend(function () {
         if (this[start])
         {
             start -= this[start].__offset;
-        } 
-
-        if (any = this.grid.oncolumnstart)
-        {
-            any = any.call(this.grid, this, start);
-
-            if (any >= 0)
-            {
-                start = any;
-            }
         }
 
         this.__show_start = start;
@@ -1033,12 +1027,6 @@ flyingon.GridColumns = Object.extend(function () {
             while (start < end)
             {
                 column = columns[start];
-
-                if (column.__span)
-                {
-                    compute_span(columns, start, end, column.__cells);
-                }
-
                 start++;
             }
         }
@@ -1049,52 +1037,6 @@ flyingon.GridColumns = Object.extend(function () {
         }
 
         return mod;
-    };
-
-
-    // 计算跨列
-    function compute_span(columns, index, end, cells) {
-
-        for (var i = cells.length - 1; i >= 0; i--)
-        {
-            var cell = cells[i],
-                span = cell.__span,
-                count = span, // 实际跨列数
-                column,
-                size;
-
-            if (span > 0)
-            {
-                size = columns[index].__size;
-
-                while (span > 0) // 计算到结束位置则提前终止
-                {
-                    if (index + span < end && (column = columns[index + span]))
-                    {
-                        if (column.__offset < span)
-                        {
-                            column.__offset = span;
-                        }
-
-                        if (column.__visible)
-                        {
-                            size += column.__size;
-                        }
-                    }
-                    else
-                    {
-                        count--;
-                    }
-
-                    span--;
-                }
-
-                cell.__size = size;
-            }
-
-            // 实际跨列数
-            cell.columnSpan = count;
-        }
     };
 
 
@@ -1691,24 +1633,40 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
             {
                 fn = function (a, b) {
 
-                    return a.data[name] > b.data[name] ? -1 : 1;
+                    a = a.data[name];
+                    b = b.data[name];
+
+                    if (a < b)
+                    {
+                        return 1;
+                    }
+
+                    return a === b ? 0 : -1;
                 };
             }
             else
             {
                 fn = function (a, b) {
 
-                    return a.data[name] > b.data[name] ? 1 : -1;
+                    a = a.data[name];
+                    b = b.data[name];
+
+                    if (a > b)
+                    {
+                        return 1;
+                    }
+
+                    return a === b ? 0 : -1;
                 };
             }
         
-            if (this.__group_view)
-            {
-                sort_group(this, fn, sort, tree);
-            }
-            else if (tree)
+            if (tree)
             {
                 sort_tree(this, fn, sort);
+            }
+            else if (this.__group_view)
+            {
+                sort_group(this, fn, sort);
             }
             else
             {
@@ -1721,19 +1679,17 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
     };
 
 
-    function sort_group(rows, fn, sort, tree) {
+    function sort_group(rows, fn, sort) {
 
-        for (var i = rows.length - 1; i >= 0; i--)
+        sort.call(rows, fn);
+
+        for (var i = rows.length; i--;)
         {
             var row = rows[i];
 
             if (row.__sub_group)
             {
-                sort_group(row, fn, sort, tree);
-            }
-            else if (tree)
-            {
-                sort_tree(row, fn, sort);
+                sort_group(row, fn, sort);
             }
             else
             {
@@ -2615,24 +2571,24 @@ flyingon.Grid.summary = (function () {
 
     fn('sum', function (row, name) {
 
-        var value = 0,
+        var cache = Decimal.singleton(0),
             any;
 
         for (var i = row.length - 1; i >= 0; i--)
         {
             if ((any = row[i]) && (any = any.data))
             {
-                value += any[name];
+                cache.plus(any[name]);
             }
         }
 
-        return value;
+        return cache.value;
     });
 
 
     fn('avg', keys.sum[0], function (row, name, value) {
 
-        return value / row.total;
+        return Decimal.singleton(value).div(row.total);
     });
 
 

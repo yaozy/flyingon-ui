@@ -32,31 +32,6 @@ flyingon.widget({
 
         grid.columns(columns);
 
-        grid.columns(1).onrender = grid.columns(5).onrender = function (cell, row) {
-
-            if (row.data.index % 3 === 1)
-            {
-                //跨一行
-                cell.rowSpan = 1;
-
-                //跨两列
-                cell.columnSpan = 2;
-            }
-        };
-
-
-        grid.onrowstart = function (rows, start) {
-
-            return start > 1 ? start - 1 : 0; //起始位置减小一行
-        };
-
-
-        grid.oncolumnstart = function (columns, start) {
-
-            return 0;
-        };
-
-
         for (var i = 0; i < 100; i++)
         {
             var item = {};

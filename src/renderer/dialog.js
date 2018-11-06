@@ -168,8 +168,15 @@ flyingon.renderer('Dialog', 'Panel', function (base) {
 
     this.movable = function (control, event) {
 
-        event.dom = control.view;
-        flyingon.dom_drag(control, event);
+        var top = (event.dom = control.view).offsetTop;
+
+        flyingon.dom_drag(control, event, null, function (e) {
+            
+            if (e.distanceY < -top)
+            {
+                e.distanceY = -top;
+            }
+        });
         
         event.dom = null;
     };

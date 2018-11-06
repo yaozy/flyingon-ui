@@ -9,6 +9,8 @@ flyingon.Control.extend('ListBox', function (base) {
 
     this.defaultValue('border', 1);
 
+    this.defaultValue('padding', 4);
+
 
 
     function render() {

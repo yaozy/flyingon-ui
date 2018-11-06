@@ -130,7 +130,7 @@ flyingon.TextButton.extend('ComboBox', function (base) {
         }
 
         combobox = this;
-        listbox.height(height + 2);
+        listbox.height(height + 8);
 
         popup.push(listbox);
         popup.show(this);

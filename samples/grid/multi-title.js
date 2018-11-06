@@ -18,53 +18,65 @@ flyingon.widget({
 
                     { 
                         title: [
-                            { text: 'F1234', span: 3, size: 35 }, 
-                            { text: 'F12', span: 1 }, 
+                            { text: 'F1234', size: 35 },
+                            { text: 'F12', merge: true },
                             'F1'
                         ]
                     },
 
                     { 
-                        title: [{ text: '' , size: 35 }, '', 'F2'] 
-                    },
-
-                    { 
-                        title: [{ text: '' , size: 35 }, { text: 'F34', span: 1 }, 'F3'] 
-                    },
-
-                    { 
-                        title: [{ text: '' , size: 35 }, '', 'F4'] 
-                    },
-
-                    { 
                         title: [
-                            { text: 'F5', size: 35 }, 
-                            { text: 'F56', span: 1 }, 
-                            { text: 'F5678', span: 3 }
+                            { text: 'F1234', size: 35, merge: true },
+                            { text: 'F12', merge: true },
+                            'F2'
                         ]
                     },
 
                     { 
                         title: [
-                            { text: 'F6', size: 35 }, 
-                            '', 
-                            ''
+                            { text: 'F1234' , size: 35, merge: true },
+                            { text: 'F34', merge: true },
+                            'F3'
                         ]
                     },
 
                     { 
                         title: [
-                            { text: 'F7', size: 35 }, 
-                            { text: 'F78', span: 1 }, 
-                            ''
+                            { text: 'F1234' , size: 35, merge: true },
+                            { text: 'F34', merge: true },
+                            'F4'
+                        ]
+                    },
+
+                    { 
+                        title: [
+                            { text: 'F5', size: 35 },
+                            { text: 'F56', merge: true },
+                            { text: 'F5678', merge: true }
+                        ]
+                    },
+
+                    { 
+                        title: [
+                            { text: 'F6', size: 35 },
+                            { text: 'F56', merge: true },
+                            { text: 'F5678', merge: true }
+                        ]
+                    },
+
+                    { 
+                        title: [
+                            { text: 'F7', size: 35 },
+                            { text: 'F78', merge: true },
+                            { text: 'F5678', merge: true }
                         ] 
                     },
 
                     { 
                         title: [
-                            { text: 'F8', size: 35 }, 
-                            '', 
-                            ''
+                            { text: 'F8', size: 35 },
+                            { text: 'F78', merge: true },
+                            { text: 'F5678', merge: true }
                         ]
                     }
                 ]

@@ -145,10 +145,8 @@ flyingon.renderer('ListBox', function (base) {
             itemHeight = storage.itemHeight,
             style = ' style="height:' + itemHeight + 'px;line-height:' + itemHeight + 'px;',
             left = flyingon.rtl ? 'right:' : 'left:',
-            top = 0,
             index = 0,
             length = list.length,
-            width,
             item,
             key,
             x,
@@ -171,7 +169,6 @@ flyingon.renderer('ListBox', function (base) {
         }
         else
         {
-            width = 0;
             style += flyingon.rtl ? 'left:0;' : 'right:0;'; //单列时充满可用空间
         }
 
@@ -222,7 +219,7 @@ flyingon.renderer('ListBox', function (base) {
             }
             
             writer.push('<div class="f-listbox-item', any ? ' f-listbox-selected"' : '"', 
-                style, 'top:', y, 'px;', left, x, ';" index="', index++, '">');
+                style, 'top:', y + 4, 'px;', left, x, ';" index="', index++, '">');
 
             if (checked !== 'none')
             {

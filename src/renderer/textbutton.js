@@ -18,9 +18,9 @@ flyingon.renderer('TextButton', 'TextBox', function (base) {
             ' onmouseout="flyingon.TextButton.onmouseout.call(this)"',
             ' onkeydown="return flyingon.TextButton.onkeydown.call(this, event)">',
                 '<input type="text" class="f-textbox-text f-border-box" style="',
-                    flyingon.rtl ? 'padding-left:22px;' : 'padding-right:22px;',
+                    flyingon.rtl ? 'padding-left:22px;"' : 'padding-right:22px;"',
                     (control.__storage || control.__defaults).inputable ? '' : ' readonly="readonly"',
-                    '" onchange="flyingon.TextButton.onchange.call(this)"/>',
+                    ' onchange="flyingon.TextButton.onchange.call(this)"/>',
                 '<span class="f-textbox-button" style="width:20px;" onclick="flyingon.TextButton.onclick.call(this, event)">');
 
         if (type === 'up-down')
