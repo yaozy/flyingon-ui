@@ -6,37 +6,57 @@ flyingon.renderer('GridColumn', function (base) {
 
 
 
-    this.render = function (writer, column, height) {
+    this.render = function (writer, columns, index, height) {
 
-        var cells = column.__cells;
+        var column = columns[index],
+            cells = column.__cells;
 
         if (cells[1])
         {
-            render_multi(writer, column, cells, height);
+            render_multi(writer, columns, index, cells, height);
         }
         else
         {
-            render_header(writer, column, cells[0] || column.__set_title('')[0], 0, column.__size, height);
+            render_header(writer, column, cells[0] || column.__set_title('')[0], column.__start, 0, column.__size, height);
         }
     };
 
 
 
-    function render_multi(writer, column, cells, height) {
+    function render_multi(writer, columns, index, cells, height) {
 
-        var length = cells.length,
+        var column = columns[index],
+            previous = columns[index - 1],
+            length = cells.length,
             y1 = 0,
             y2,
-            cell;
+            left,
+            size,
+            cell,
+            width;
+
+        if (previous && previous.__visible)
+        {
+            previous = previous.__cells;
+        }
 
         for (var i = 0; i < length; i++)
         {
             cell = cells[i];
+            left = column.__start;
+            size = column.__size;
+
+            // 相同字符合并
+            if (previous && previous.length > 1 && (width = compute_span(columns, index, i, cell.text())))
+            {
+                left -= width;
+                size += width;
+            }
 
             y2 = cell.__height;
             y2 = y2 > 0 ? y2 : (height / (length - i) | 0);
-   
-            render_header(writer, column, cell, y1, cell.__size || column.__size, y2);
+
+            render_header(writer, columns[index], cell, left, y1, size, y2);
 
             y1 += y2;
             height -= y2;
@@ -45,13 +65,13 @@ flyingon.renderer('GridColumn', function (base) {
 
 
 
-    function render_header(writer, column, cell, y, width, height) {
+    function render_header(writer, column, cell, x, y, width, height) {
 
         cell.row = null;
         cell.column = column;
         cell.defaultClass += ' f-grid-cell';
 
-        render.cssText = 'left:' + column.__start +
+        render.cssText = 'left:' + x +
             'px;top:' + y +
             'px;width:' + width + 
             'px;height:' + height + 
@@ -144,6 +164,73 @@ flyingon.renderer('GridColumn', function (base) {
             style.height = style.lineHeight = height + 'px';
         }
     };
+
+
+
+    // 更新列
+    this.__update = function (columns, index, fragment) {
+
+        var column = columns[index],
+            cells = column.__cells,
+            previous = cells.length > 0 && columns[index - 1],
+            i = 0,
+            cell,
+            node,
+            style,
+            left,
+            size,
+            width;
+
+        if (previous && previous.__visible)
+        {
+            previous = previous.__cells;
+        }
+
+        while (cell = cells[i])
+        {
+            left = column.__start;
+            size = column.__size;
+
+            // 相同字符合并
+            if (previous && previous.length > 1 && (width = compute_span(columns, index, i, cell.text())))
+            {
+                left -= width;
+                size += width;
+            }
+
+            style = (node = cell.view).style;
+            style.left = left + 'px';
+            style.width = size + 'px';
+
+            fragment.appendChild(node);
+            i++;
+        }
+    }
+
+
+    function compute_span(columns, columnIndex, cellIndex, text) {
+    
+        var width = 0,
+            column,
+            cells,
+            cell;
+
+        while (columnIndex--)
+        {
+            column = columns[columnIndex];
+
+            if (column.__visible && (cells = column.__cells).length > 1 && (cell = cells[cellIndex]) && cell.text() === text)
+            {
+                width += column.__size;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return width;
+    }
     
 
 });
@@ -156,6 +243,11 @@ flyingon.renderer('GridRow', function (base) {
     var id = 1;
 
     var render = this.__render_default;
+
+
+    function fn() {
+
+    }
 
 
     this.show = function (fragment, writer, row, columns, start, end, y, height, tag) {
@@ -691,6 +783,7 @@ flyingon.renderer('Grid', function (base) {
             cell,
             any;
 
+        // 分组框
         if (any = dom.getAttribute('column-name'))
         {
             check_drag(this, dom, null, any, 1);
@@ -713,7 +806,7 @@ flyingon.renderer('Grid', function (base) {
                     }
                     else if (any = cell.column) // 列头
                     {
-                        check_drag(this, dom, any, '', 1);
+                        check_drag(this, dom, any, '', cell_span(cell));
                     }
 
                     break;
@@ -836,6 +929,48 @@ flyingon.renderer('Grid', function (base) {
             grid.renderer.__do_vscroll(grid, grid.scrollTop = y);
         }
     };
+
+
+
+    function cell_span(cell) {
+
+        var column = cell.column,
+            cells = column.__cells;
+
+        if (cells.length === 1)
+        {
+            return 1;
+        }
+
+        var columns = column.grid.__columns,
+            index = cells.indexOf(cell),
+            text = cells[index].text(),
+            count = 1;
+
+        for (var i = columns.length; i--;)
+        {
+            if (columns[i] === column)
+            {
+                break;
+            }
+        }
+
+        while (i--)
+        {
+            cells = columns[i].__cells;
+
+            if (cells && cells.length > 1 && (cell = cells[index]) && cell.text() === text)
+            {
+                count++;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return count;
+    }
 
 
     // 同步使用tab造成焦点位置变化的问题
@@ -1016,7 +1151,7 @@ flyingon.renderer('Grid', function (base) {
         }
         else if (name && (column = grid.__columns.find(name)))
         {
-             from = true;
+            from = true;
         }
     
         column && column.draggable() && flyingon.dom_drag({
@@ -1025,7 +1160,7 @@ flyingon.renderer('Grid', function (base) {
                 column: column,
                 dom: dom, 
                 name: name,
-                index: column.__index,
+                index: column.__index - count + 1,
                 count: count,
                 from: from  // 标记从分组框拖出
             },
@@ -1202,8 +1337,6 @@ flyingon.renderer('Grid', function (base) {
             offset = -grid.scrollLeft | 0;
             x -= offset;
         }
-
-        console.log(columns[2].__visible);
 
         while (start < end)
         {
@@ -1563,9 +1696,6 @@ flyingon.renderer('Grid', function (base) {
             index = start,
             column,
             node,
-            style,
-            cells,
-            cell,
             any;
 
         while (index < end)
@@ -1574,30 +1704,17 @@ flyingon.renderer('Grid', function (base) {
             {
                 if (column.view)
                 {
-                    any = 0;
-                    cells = column.__cells;
-
-                    if (style = column.__show_tag !== tag)
+                    if (column.__show_tag !== tag)
                     {
                         column.__show_tag = tag;
                     }
 
-                    while (cell = cells[any++])
-                    {
-                        fragment.appendChild(node = cell.view);
-
-                        if (style)
-                        {
-                            style = node.style;
-                            style.left = column.__start + 'px';
-                            style.width = (cell.__size || column.__size) + 'px';
-                        }
-                    }
+                    column.renderer.__update(columns, index - 1, fragment);
                 }
                 else
                 {
                     column.__show_tag = tag;
-                    column.renderer.render(writer, column, height);
+                    column.renderer.render(writer, columns, index - 1, height);
                 }
             }
         }

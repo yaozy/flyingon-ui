@@ -175,7 +175,7 @@ Object.extend('Control', function () {
                 flyingon.__register_delay(this);
             }
 
-            if ((any = this.parent) && any.__update_dirty < 2)
+            if ((any = this.parent) && any.__update_dirty < 2 && any.__arrange_delay)
             {
                 any.__arrange_delay(2);
             }
@@ -301,7 +301,7 @@ Object.extend('Control', function () {
                 flyingon.__register_delay(this);
             }
         
-            if ((any = this.parent) && any.__update_dirty < 2)
+            if ((any = this.parent) && any.__update_dirty < 2 && any.__arrange_delay)
             {
                 any.__arrange_delay(2);
             }

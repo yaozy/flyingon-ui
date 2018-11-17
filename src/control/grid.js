@@ -171,7 +171,11 @@
 
 
     // 单元格同值合并方式
-    this.defineProperty('merge', 'none');
+    // 0: 不合并
+    // 1: 列合并
+    // 2: 行合并
+    // 3: 行列同时合并
+    this.defineProperty('merge', 0);
 
 
     // 汇总设置
@@ -1385,19 +1389,18 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
             name = groups[index++],
             keys = group_data(rows, name),
             next = !!groups[index],
-            row,
-            text;
+            row;
 
-        for (var i = 0, l = keys.length; i < l; i++)
+        for (var key in keys)
         {
-            if (rows = keys[text = keys[i]])
+            if (rows = keys[key])
             {
                 row = new Class();
 
                 row.grid = grid;
                 row.parent = parent;
                 row.name = name,
-                row.text = text;
+                row.text = key;
 
                 row.level = level;
                 row.total = rows.length;
@@ -1419,7 +1422,7 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
 
     function group_data(rows, name) {
 
-        var keys = [],
+        var keys = Object.create(null),
             row,
             data,
             key,
@@ -1435,15 +1438,9 @@ flyingon.GridView = flyingon.defineClass(Array, function () {
                 }
                 else
                 {
-                    keys.push(key);
                     keys[key] = [row];
                 }
             }
-        }
-
-        if (keys.length > 0)
-        {
-            keys.sort();
         }
 
         return keys;

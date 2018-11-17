@@ -1187,7 +1187,7 @@ span {
   overflow: hidden;
   z-index: 99;
   background-color: white;
-  box-shadow: 0 0 8px silver;
+  box-shadow: 0 0 8px #363636;
 }
 .f-dialog-active {
   z-index: 100;
