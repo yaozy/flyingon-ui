@@ -219,7 +219,7 @@ flyingon.renderer('GridColumn', function (base) {
         {
             column = columns[columnIndex];
 
-            if (column.__visible && (cells = column.__cells).length > 1 && (cell = cells[cellIndex]) && cell.text() === text)
+            if (column.__visible && (cells = column.__cells).length > 1 && (cell = cells[cellIndex]) && cell.text && cell.text() === text)
             {
                 width += column.__size;
             }
@@ -245,18 +245,17 @@ flyingon.renderer('GridRow', function (base) {
     var render = this.__render_default;
 
 
-    function fn() {
 
-    }
+    this.show = function (fragment, writer, rows, index, columns, start, end, y, height, tag) {
 
-
-    this.show = function (fragment, writer, row, columns, start, end, y, height, tag) {
-
-        var cells = row.__cells,
+        var row = rows[index],
+            cells = row.__cells,
             cell,
             view,
             style,
             column,
+            name,
+            merge,
             any;
 
         if (!cells)
@@ -269,26 +268,22 @@ flyingon.renderer('GridRow', function (base) {
         {
             if ((column = columns[start]) && column.__visible)
             {
-                any = column.__name || (column.__name = '__column_' + id++);
+                name = column.__name || (column.__name = '__column_' + id++);
+                merge = column.__merge;
 
-                if (cell = cells[any])
+                if (cell = cells[name])
                 {
+                    merge = (merge & 1) && compute_rowspan(cell, rows, index, name, row.data[name], height, tag) || 0;
+
                     // 处理树列
                     if (column.__tree_cell)
                     {
                         fragment.appendChild(view = row.view);
                         
-                        if (cell.__top !== y)
-                        {
-                            view.style.top = y + 'px';
-                        }
-
-                        if (cell.__show_tag !== tag)
-                        {
-                            style = view.style;
-                            style.left = column.__start +  'px';
-                            style.height = height + 'px';
-                        }
+                        style = view.style;
+                        style.top = (cell.__top = y) - merge + 'px';
+                        style.left = column.__start +  'px';
+                        style.height = height + merge + 'px';
                     }
 
                     fragment.appendChild(view = cell.view);
@@ -299,33 +294,51 @@ flyingon.renderer('GridRow', function (base) {
                         any.call(column, cell, row);
                     }
 
-                    if (cell.__top !== y)
-                    {
-                        view.style.top = (cell.__top = y) + 'px';
-                    }
-
-                    if (cell.__show_tag !== tag)
-                    {
-                        cell.__show_tag = tag;
-
-                        style = view.style;
-                        style.left = column.__start + 'px';
-
-                        style.width = column.__size + 'px';
-                        style.height = height + 'px';
-                    }
+                    style = view.style;
+                    style.top = (cell.__top = y) - merge + 'px';
+                    style.left = column.__start + 'px';
+                    style.width = column.__size + 'px';
+                    style.height = style.lineHeight = height + merge + 'px';
                 }
                 else if (cell = this.render(writer, row, column, y, height))
                 {
                     cell.__top = y;
-                    cell.__show_tag = tag;
-                    cells[any] = cell;
+                    cells[name] = cell;
+                    
+                    if ((merge & 1) && index > 0)
+                    {
+                        compute_rowspan(cell, rows, index, name, row.data[name], height, tag);
+                    }
                 }
             }
 
+            row.__show_tag = tag;
             start++;
         }
     };
+
+
+    function compute_rowspan(cell, rows, index, name, value, height, tag) {
+
+        var total = 0;
+        
+        while (index--)
+        {
+            var row = rows[index];
+
+            if (row.__show_tag === tag && row.data[name] === value)
+            {
+                total += height;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return cell.__merge = total;
+    }
+
 
 
     this.render = function (writer, row, column, y, height) {
@@ -436,18 +449,19 @@ flyingon.renderer('GridRow', function (base) {
     };
 
 
-    this.mount = function (view, row, columns, start, end, fragment, tag) {
+    this.mount = function (view, row, columns, start, end, height, fragment, tag) {
 
         var grid = row.grid,
             cells = row.__cells,
             column,
             cell,
             node,
-            name;
+            style,
+            any;
 
         while (start < end)
         {
-            if ((column = columns[start++]) && (name = column.__name) && (cell = cells[name]))
+            if ((column = columns[start++]) && (any = column.__name) && (cell = cells[any]))
             {
                 if (node = cell.view)
                 {
@@ -467,6 +481,13 @@ flyingon.renderer('GridRow', function (base) {
                     }
 
                     fragment.insertBefore(node, tag);
+
+                    if (any = cell.__merge)
+                    {
+                        style = node.style;
+                        style.top = cell.__top - any + 'px';
+                        style.height = style.lineHeight = height + any + 'px';
+                    }
 
                     cell.parent = grid;
                     cell.renderer.mount(cell, node);
@@ -959,7 +980,7 @@ flyingon.renderer('Grid', function (base) {
         {
             cells = columns[i].__cells;
 
-            if (cells && cells.length > 1 && (cell = cells[index]) && cell.text() === text)
+            if (cells && cells.length > 1 && (cell = cells[index]) && cell.text && cell.text() === text)
             {
                 count++;
             }
@@ -1515,6 +1536,11 @@ flyingon.renderer('Grid', function (base) {
     // 更新表格内容
     this.update = function (grid) {
 
+        if (!grid.offsetHeight)
+        {
+            return;
+        }
+
         var storage = grid.__storage || grid.__defaults,
             columns = grid.__columns,
             width = grid.__compute_columns(), // 计算表格列
@@ -1940,7 +1966,7 @@ flyingon.renderer('Grid', function (base) {
             if (row = rows[i])
             {
                 row.__show_index = i; // 记录显示行索引以便于事件处理
-                row.renderer.show(fragment, writer, row, columns, column_start, column_end, top, height, tag);
+                row.renderer.show(fragment, writer, rows, i, columns, column_start, column_end, top, height, tag);
 
                 top += height;
             }
@@ -1955,7 +1981,7 @@ flyingon.renderer('Grid', function (base) {
 
             for (var i = start; i < end; i++)
             {
-                tag = (row = rows[i]).renderer.mount(any, row, columns, column_start, column_end, fragment, tag);
+                tag = (row = rows[i]).renderer.mount(any, row, columns, column_start, column_end, height, fragment, tag);
             }
         }
 

@@ -175,7 +175,13 @@
     // 1: 列合并
     // 2: 行合并
     // 3: 行列同时合并
-    this.defineProperty('merge', 0);
+    this.defineProperty('merge', 0, {
+
+        set: function (name, value) {
+
+            this.__merge = value;
+        }
+    });
 
 
     // 汇总设置

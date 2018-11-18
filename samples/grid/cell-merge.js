@@ -27,7 +27,7 @@ flyingon.widget({
 
         for (var j = 1; j <= 10; j++)
         {
-            columns.push({ title: 'F' + j, name: 'F' + j });
+            columns.push({ title: 'F' + j, name: 'F' + j, merge: 1 });
         }
 
         grid.columns(columns);
@@ -40,7 +40,7 @@ flyingon.widget({
 
             for (var j = 1; j <= 10; j++)
             {
-                item['F' + j] = 'R:' + (i + 1) + ' C:' + j;
+                item['F' + j] = Math.random() < 0.5 ? 0 : 1;
             }
 
             data.push(item);
