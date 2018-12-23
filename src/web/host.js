@@ -417,6 +417,25 @@
     on(document, 'touchcancel', touch_event);
 
 
+    on(document, 'change', function (e) {
+     
+        var control = flyingon.findControl(e.target);
+
+        if (control)
+        {
+            var event = new flyingon.Event(e.type);
+
+            event.dom = e.target;
+            control.trigger(event);
+
+            if (event.dom.type === 'file')
+            {
+                event.dom.value = '';
+            }
+        }
+    });
+
+
     on(document, 'contextmenu', function (e) {
 
         var control = flyingon.findControl(e.target);

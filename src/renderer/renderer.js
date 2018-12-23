@@ -22,9 +22,6 @@
     //margin border padding css样式缓存
     var sides_cache = flyingon.create(null);
 
-    //css名称映射
-    var css_map = flyingon.css_map(true);
-
     //style名称映射
     var style_map = flyingon.css_map();
 
