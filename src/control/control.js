@@ -599,6 +599,9 @@ Object.extend('Control', function () {
     style(this, 'text-overflow');
 
 
+    style(this, 'text-shadow');
+
+
     //转换
     style(this, 'transform');
 

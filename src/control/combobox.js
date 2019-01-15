@@ -51,7 +51,7 @@ flyingon.TextButton.extend('ComboBox', function (base) {
 
 
     
-    var combobox, cache;
+    var combobox;
 
 
 
@@ -88,17 +88,22 @@ flyingon.TextButton.extend('ComboBox', function (base) {
 
 
 
-    //弹出日历窗口
     this.popup = this.__on_click = function () {
 
         var popup = this.__get_popup(),
-            listbox = cache || init_listbox(),
+            listbox = init_listbox(),
             data = this.__data_list,
             storage = this.__storage || this.__defaults,
             columns = storage.columns,
             height = storage.itemHeight,
             length;
 
+        if (this.onopening)
+        {
+            this.onopening(listbox);
+            data = this.__data_list;
+        }
+    
         listbox.border(0)
             .checked(storage.checked)
             .columns(columns)
@@ -128,6 +133,10 @@ flyingon.TextButton.extend('ComboBox', function (base) {
 
             height *= length;
         }
+        else if (data)
+        {
+            height *= data.length;
+        }
 
         combobox = this;
         listbox.height(height + 8);
@@ -135,13 +144,13 @@ flyingon.TextButton.extend('ComboBox', function (base) {
         popup.push(listbox);
         popup.show(this);
 
-        this.trigger('popup');
+        this.trigger('opened');
     };
 
 
     function init_listbox() {
 
-        return cache = new flyingon.ListBox().on('change', function (e) {
+        return new flyingon.ListBox().on('change', function (e) {
             
             var target = combobox;
 

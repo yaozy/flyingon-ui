@@ -91,8 +91,6 @@ webminify()
         'control/textbutton.js',
         'control/number.js',
         'control/combobox.js',
-        'control/combotree.js',
-        'control/combogrid.js',
         'control/calendar.js',
         'control/date.js',
         'control/time.js',
@@ -126,4 +124,7 @@ webminify()
         'web/host.js'
     ])
     .combine('\r\n\r\n\r\n\r\n\r\n')
-    .output('dist/js/flyingon.js');
+    .output('dist/js/flyingon.js')
+    
+    .compressjs()
+    .output('dist/js/flyingon.min.js');

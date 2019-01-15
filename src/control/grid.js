@@ -348,16 +348,6 @@
     };
 
 
-    // 同步表格列处理(新创建的控件需要赋值,变更时需同步以前创建的控件值)
-    this.__sync_column = function (name, value) {
-
-        var storage = this.__storage2 || (this.__storage2 = flyingon.create(null));
-
-        storage[name] = value;
-        this.view && this.grid.__sync_value(name, value);
-    };
-
-
 
     // 绑定表格列渲染器
     flyingon.renderer.bind(this, 'GridColumn');
@@ -546,34 +536,22 @@ flyingon.GridColumn.extend(function (base) {
 
 
     // 是否可输入
-    this.defineProperty('inputable', false, { 
-        
-        set: this.__sync_column
-    });
+    this.defineProperty('inputable', false);
 
 
     // 按钮图标
-    this.defineProperty('icon', '', {
-        
-        set: this.__sync_column
-    });
+    this.defineProperty('icon', '');
 
 
     // 按钮显示模式
     // show      总是显示
     // none      不显示
     // hover     鼠标划过时显示
-    this.defineProperty('button', 'show', {
-        
-        set: this.__sync_column
-    });
+    this.defineProperty('button', 'show');
 
 
     // 按钮大小
-    this['button-size'] = this.defineProperty('buttonSize', 16, {
-        
-        set: this.__sync_column
-    });
+    this['button-size'] = this.defineProperty('buttonSize', 16);
 
 
 
@@ -618,7 +596,7 @@ flyingon.GridColumn.extend(function (base) {
     this.defaultValue('align', 'right');
 
 
-    flyingon.fragment('f-Number', this, this.__sync_column);
+    flyingon.fragment('f-Number', this);
 
 
     // 创建单元格控件
@@ -660,7 +638,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
     // 扩展下拉框定义
-    flyingon.fragment('f-ComboBox', this, this.__sync_column);
+    flyingon.fragment('f-ComboBox', this);
 
 
     // 下拉数据
@@ -676,8 +654,7 @@ flyingon.GridColumn.extend(function (base) {
 
     function set_items(list) {
 
-        this.__data_list = list;
-        this.view && this.grid.__sync_value('items', list);        
+        this.__data_list = list;     
     };
 
 
@@ -691,6 +668,8 @@ flyingon.GridColumn.extend(function (base) {
         {
             control.items(any);
         }
+        
+        control.onopening = this.onopening;
         
         if (any = this.__storage2)
         {
@@ -2414,13 +2393,6 @@ flyingon.Control.extend('Grid', function (base) {
                 any.set(name, (control.value || control.text).call(control));
             }
         }
-    };
-
-
-    // 同步控件属性值
-    this.__sync_value = function (name, value) {
-
-
     };
 
 

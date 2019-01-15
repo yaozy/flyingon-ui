@@ -39,13 +39,16 @@ flyingon.widget({
         var random = Math.random;
         var date = new Date();
 
-        grid.columns(5).items([
-            { value: 'R1', text: 'text 1' }, 
-            { value: 'R2', text: 'text 2' }, 
-            { value: 'R3', text: 'text 3' },
-            { value: 'R4', text: 'text 4' },
-            { value: 'R5', text: 'text 5' }
-        ]);
+        grid.columns(5).onopening = function () {
+
+            this.items([
+                { value: 'R1', text: 'text 1' }, 
+                { value: 'R2', text: 'text 2' }, 
+                { value: 'R3', text: 'text 3' },
+                { value: 'R4', text: 'text 4' },
+                { value: 'R5', text: 'text 5' }
+            ]);
+        }
 
         for (var i = 0; i < 100; i++)
         {

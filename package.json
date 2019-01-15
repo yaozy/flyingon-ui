@@ -10,7 +10,7 @@
     "build-css": "node build/all-css.js",
     "build-h5d": "node build/h5d.js",
     "test": "karma start",
-    "dev": "node server.js"
+    "server": "node server.js"
   },
   "repository": {
     "type": "git",

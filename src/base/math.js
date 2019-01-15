@@ -250,7 +250,7 @@
     }
 
 
-    prototype.pow = function (value) {
+    prototype.pow10 = function (value) {
 
         if (value |= 0)
         {
@@ -355,7 +355,7 @@
 
 
     // 扩展数字方法
-    prototype = Number.prototype;
+    var number = Number.prototype;
 
 
     // 注: 不同浏览器toFixed有差异, chrome使用的是银行家舍入规则
@@ -364,14 +364,14 @@
     // 此处统一处理为四舍五入
     if ((1.115).toFixed(2) === '1.11')
     {
-        prototype.toFixed = function (digits) {
+        number.toFixed = function (digits) {
 
             return Decimal.call(cache, this).toFixed(digits);
         }
     }
 
 
-    prototype.round = function (digits) {
+    number.round = function (digits) {
 
         var value = +this;
 

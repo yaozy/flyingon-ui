@@ -52,8 +52,6 @@ var menuList = [
             { text: 'TextButton', url: url_controls + 'textbutton.js' },
             { text: 'ListBox', url: url_controls + 'listbox.js' },
             { text: 'ComboBox', url: url_controls + 'combobox.js' },
-            { text: 'ComboTree', url: url_controls + 'combotree.js' },
-            { text: 'ComboGrid', url: url_controls + 'combogrid.js' },
             { text: 'Number', url: url_controls + 'number.js' },
             { text: 'Calendar', url: url_controls + 'calendar.js' },
             { text: 'Date', url: url_controls + 'date.js' },
