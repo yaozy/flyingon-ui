@@ -105,8 +105,7 @@ flyingon.renderer('TextBox', function (base) {
 
     this.value = function (control, view) {
 
-        var storage = control.__storage,
-            any;
+        var any;
 
         if ((any = control.__storage) && !any.value && (any = any.placeholder))
         {

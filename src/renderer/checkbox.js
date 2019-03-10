@@ -8,7 +8,7 @@ flyingon.renderer('CheckBox', function (base) {
         
         render.call(this, writer, control);
         
-        writer.push('><input type="checkbox" class="f-checkbox-input" onchange="flyingon.CheckBox.onchange.call(this)"/></span>');
+        writer.push('><input type="checkbox" class="f-checkbox-input" /></span>');
     };
 
 

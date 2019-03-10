@@ -349,6 +349,13 @@
 
 
 
+    //同步表格列处理(新创建的控件需要赋值,变更时需同步以前创建的控件值)
+    this.__sync_column = function (name, value) {
+
+        (this.__storage2 || (this.__storage2 = flyingon.create(null)))[name] = value;
+    };
+
+
     // 绑定表格列渲染器
     flyingon.renderer.bind(this, 'GridColumn');
 
@@ -536,22 +543,34 @@ flyingon.GridColumn.extend(function (base) {
 
 
     // 是否可输入
-    this.defineProperty('inputable', false);
+    this.defineProperty('inputable', false, { 
+        
+        set: this.__sync_column
+    });
 
 
     // 按钮图标
-    this.defineProperty('icon', '');
+    this.defineProperty('icon', '', { 
+        
+        set: this.__sync_column
+    });
 
 
     // 按钮显示模式
     // show      总是显示
     // none      不显示
     // hover     鼠标划过时显示
-    this.defineProperty('button', 'show');
+    this.defineProperty('button', 'show', { 
+        
+        set: this.__sync_column
+    });
 
 
     // 按钮大小
-    this['button-size'] = this.defineProperty('buttonSize', 16);
+    this['button-size'] = this.defineProperty('buttonSize', 16, { 
+        
+        set: this.__sync_column
+    });
 
 
 
@@ -596,7 +615,7 @@ flyingon.GridColumn.extend(function (base) {
     this.defaultValue('align', 'right');
 
 
-    flyingon.fragment('f-Number', this);
+    flyingon.fragment('f-Number', this, this.__sync_column);
 
 
     // 创建单元格控件
@@ -638,7 +657,7 @@ flyingon.GridColumn.extend(function (base) {
 
 
     // 扩展下拉框定义
-    flyingon.fragment('f-ComboBox', this);
+    flyingon.fragment('f-ComboBox', this, this.__sync_column);
 
 
     // 下拉数据

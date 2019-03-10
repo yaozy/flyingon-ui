@@ -111,7 +111,6 @@ flyingon.renderer('TextButton', 'TextBox', function (base) {
     };
 
 
-
     this.inputable = function (control, view, value) {
 
         if (value)

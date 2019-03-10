@@ -91,15 +91,15 @@ flyingon.Control.extend('TextButton', function (base) {
 
         if (value === void 0)
         {
-            var list = this.__data_list;
+            var list = this.__data_list,
+                storage = this.__storage || this.__defaults;
 
             if (list)
             {
-                var storage = this.__storage || this.__defaults;
                 return list.text(storage.value, this.__multi(storage) ? storage.separator || ',' : '');
             }
 
-            return '';
+            return storage.value;
         }
 
         this.value(value);

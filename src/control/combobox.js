@@ -100,7 +100,7 @@ flyingon.TextButton.extend('ComboBox', function (base) {
 
         if (this.onopening)
         {
-            this.onopening(listbox);
+            this.onopening();
             data = this.__data_list;
         }
     
